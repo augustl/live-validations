@@ -5,6 +5,10 @@ class ActiveRecordHooksTest < Test::Unit::TestCase
     reset_callbacks Post
   end
   
+  def teardown
+    restore_callbacks Post
+  end
+  
   def test_validation_callbacks_for_on_new_record
     post = new_post
     Post.validates_presence_of :title
@@ -35,10 +39,6 @@ class ActiveRecordHooksTest < Test::Unit::TestCase
     assert validators.detect {|v| v.options[:validation_method] == :presence }
     
     assert !post.validation_callback_for(:body).detect {|v| v.options[:validation_method] == :format}
-  end
-  
-  def teardown
-    restore_callbacks Post
   end
   
   private
