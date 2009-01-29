@@ -45,4 +45,8 @@ class Test::Unit::TestCase #:nodoc:
       model.instance_variable_set("@#{name}", callback)
     end
   end
+  
+  #def render(template)
+  #  @output = @view.render_template(ActionView::InlineTemplate.new(@view, template))
+  #end
 end

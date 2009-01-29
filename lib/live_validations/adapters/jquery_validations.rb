@@ -1,5 +1,6 @@
 module LiveValidations
   module Adapters
+    # Adapter for http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     class JqueryValidations < LiveValidations::Adapter
       validates :presence do |v|
         v.json['required'] = true

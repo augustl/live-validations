@@ -2,9 +2,10 @@ module LiveValidations
   class Adapter
     # The internal representation of each of the 'validates' blocks in the adapter implementation.
     class ValidationHook
-      attr_reader :json, :callback
+      attr_reader :json, :tag_attributes, :callback
       def initialize(&block)
         @json = {}
+        @tag_attributes = {}
         @proc = block
       end
       
@@ -14,17 +15,9 @@ module LiveValidations
         
         @proc.call(self)
         
-        pass_json_hooks_to_adapter_instance
-      end
-      
-      private
-
-      # Adds stuff to the adapter instance's @json_data
-      def pass_json_hooks_to_adapter_instance
-        return if @json.blank?
-        
         @callback.options[:attributes].each do |attribute|
-          @adapter_instance.json_data[attribute.to_s].merge!(@json)
+          @adapter_instance.json_data[attribute.to_s].merge!(@json) unless @json.blank?
+          @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes) unless @tag_attributes.blank?
         end
       end
     end

@@ -21,17 +21,31 @@ module LiveValidations
     
     # Called by the form builder, rendering the JSON (if the adapter utilizes this)
     def render_json
-      self.class.json_proc.call(self) if json_proc && !json_data.blank?
+      self.class.json_proc.call(self)
+    end
+    
+    def utilizes_json?
+      json_proc && !json_data.blank?
     end
     
     def json_data
-      @json_data ||= Hash.new {|hash, key| hash[key] = {} }
+      @json_data ||= hash_with_blank_hash_as_default_key
+    end
+    
+    def tag_attributes_data
+      @tag_attributes_data ||= hash_with_blank_hash_as_default_key
     end
     
     # Utility method, so that adapters can call this method directly instead of explicitly
     # doing what this method does -- converting the json_data to actual JSON data.
     def json
       json_data.to_json
+    end
+    
+    private
+    
+    def hash_with_blank_hash_as_default_key
+      Hash.new {|hash, key| hash[key] = {} }
     end
   end
 end

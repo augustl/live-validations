@@ -2,4 +2,9 @@
   <%= f.text_field :title %>
   <%= f.text_area :excerpt %>
   <%= f.text_area :body %>
+  
+  <%= f.password_field :password %>
+  <%= f.password_field :password_confirmation %>
+  
+  <%= f.select :category, ['Just', 'Select', 'Something'] %>
 <% end %>
