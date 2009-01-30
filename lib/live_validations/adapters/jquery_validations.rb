@@ -17,7 +17,10 @@ module LiveValidations
       end
   
       validates :confirmation do |v|
-        # hmm..
+        v.callback.options[:attributes].each do |attribute|
+          prefix = v.adapter_instance.active_record_instance.class.name.downcase
+          v.raw_json("#{prefix}[#{attribute}_confirmation]" => {'equalTo' => "##{prefix}_#{attribute}"})
+        end
       end
   
       validates :format do |v|

@@ -2,11 +2,16 @@ module LiveValidations
   class Adapter
     # The internal representation of each of the 'validates' blocks in the adapter implementation.
     class ValidationHook
-      attr_reader :json, :tag_attributes, :callback
+      attr_reader :json, :tag_attributes, :callback, :adapter_instance
       def initialize(&block)
         @json = {}
+        @raw_json = {}
         @tag_attributes = {}
         @proc = block
+      end
+      
+      def raw_json(json)
+        recursively_merge_hash(@raw_json, json)
       end
       
       def run_validation(adapter_instance, callback)
@@ -21,8 +26,20 @@ module LiveValidations
             @adapter_instance.json_data["#{prefix}[#{attribute}]"].merge!(@json)
           end
           
-          @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes) unless @tag_attributes.blank?
+          unless @raw_json.blank?
+            recursively_merge_hash(@adapter_instance.json_data, @raw_json)
+          end
+          
+          unless @tag_attributes.blank?
+            @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes)
+          end
         end
+      end
+      
+      private
+      
+      def recursively_merge_hash(h1, h2)
+        h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hash(_old, _new) else _new end  }
       end
     end
   end

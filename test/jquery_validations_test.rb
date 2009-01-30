@@ -32,4 +32,12 @@ class JqueryValidationsTest < Test::Unit::TestCase
     assert @response.body.include?("$('#new_post').validate")
     assert @response.body.include?({'rules' => {'post[title]' => {'required' => true}}}.to_json)
   end
+  
+  def test_confirmation
+    Post.validates_confirmation_of :password
+    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+
+    expected_json = {"post[password_confirmation]" => {"equalTo" => "#post_password"}}
+    assert_equal expected_json, validator.json_data
+  end
 end
