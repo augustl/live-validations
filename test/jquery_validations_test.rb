@@ -17,7 +17,7 @@ class JqueryValidationsTest < Test::Unit::TestCase
     Post.validates_presence_of :title
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
     
-    expected_json_data = {"title" => {"required" => true}}
+    expected_json_data = {"post[title]" => {"required" => true}}
     assert_equal expected_json_data, validator.json_data
   end
   
@@ -27,9 +27,9 @@ class JqueryValidationsTest < Test::Unit::TestCase
     
     get :new
     assert_response :success
-    
+            
     assert_select 'script[type=text/javascript]'
     assert @response.body.include?("$('#new_post').validate")
-    assert @response.body.include?({'rules' => {'title' => {'required' => true}}}.to_json)
+    assert @response.body.include?({'rules' => {'post[title]' => {'required' => true}}}.to_json)
   end
 end

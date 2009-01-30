@@ -16,7 +16,11 @@ module LiveValidations
         @proc.call(self)
         
         @callback.options[:attributes].each do |attribute|
-          @adapter_instance.json_data[attribute.to_s].merge!(@json) unless @json.blank?
+          unless @json.blank?
+            prefix =  @adapter_instance.active_record_instance.class.name.downcase
+            @adapter_instance.json_data["#{prefix}[#{attribute}]"].merge!(@json)
+          end
+          
           @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes) unless @tag_attributes.blank?
         end
       end
