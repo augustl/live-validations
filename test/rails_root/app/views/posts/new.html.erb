@@ -1,4 +1,4 @@
-<% live_validation_form_for(@post) do |f| %>
+<% form_for(@post, :live_validations => true) do |f| %>
   <%= f.text_field :title %>
   <%= f.text_area :excerpt %>
   <%= f.text_area :body %>
