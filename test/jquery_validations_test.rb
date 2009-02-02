@@ -70,4 +70,28 @@ class JqueryValidationsTest < Test::Unit::TestCase
     expected_json = {"post[check_me]" => {"required" => true}}
     assert_equal expected_json, validator.json_data
   end
+  
+  def test_validates_length_of_within
+    Post.validates_length_of :title, :within => 4..40
+    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    
+    expected_json = {"post[title]" => {"rangelength" => [4, 40]}}
+    assert_equal expected_json, validator.json_data
+  end
+  
+  def test_validates_length_of_maximum
+    Post.validates_length_of :title, :maximum => 20
+    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    
+    expected_json = {"post[title]" => {"maxlength" => 20}}
+    assert_equal expected_json, validator.json_data
+  end
+  
+  def test_validates_length_of_minimum
+    Post.validates_length_of :title, :minimum => 20
+    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    
+    expected_json = {"post[title]" => {"minlength" => 20}}
+    assert_equal expected_json, validator.json_data
+  end
 end

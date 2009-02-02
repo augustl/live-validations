@@ -11,9 +11,15 @@ module LiveValidations
       end
   
       validates :length do |v|
-        v.json['minlength']   = v.callback.options[:minimum]
-        v.json['maxlength']   = v.callback.options[:maximum]
-        v.json['range']       = [v.callback.options[:within].first, v.callback.options[:within].last] if v.callback.options[:within]
+        # :within, :maximum, :minimum, or :is
+        v.json['minlength']   = v.callback.options[:minimum] if v.callback.options[:minimum]
+        v.json['maxlength']   = v.callback.options[:maximum] if v.callback.options[:maximum]
+        v.json['rangelength'] = [v.callback.options[:within].first, v.callback.options[:within].last] if v.callback.options[:within]
+        
+        if v.callback.options[:is]
+          length = v.callback.options[:is]
+          add_custom_rule(v, "lengthIs#{length}", "value.length == #{length}", "Please enter exactly #{length} characters.")
+        end
       end
   
       validates :numericality do |v|
@@ -38,13 +44,8 @@ module LiveValidations
           # TODO: handle multiline as well
         end
         
-        # Create a validation method
-        identifier = Digest::SHA1.hexdigest(js_regex)
-        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { return #{js_regex}.test(value)}, 'Invalid format.')"
+        add_custom_rule(v, Digest::SHA1.hexdigest(js_regex), "#{js_regex}.test(value)", "Invalid format")
         # TODO: Don't use a static message.
-        
-        # Assign the validation method to this validator.
-        v.json[identifier] = true
       end
       
       validates :uniqueness do |v|
@@ -54,9 +55,18 @@ module LiveValidations
       json do |a|
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
         %{
-         #{a.extras['declarations'].join} 
+         #{render_custom_rules(a)} 
          $('##{dom_id}').validate(#{{'rules' => a.json_data}.to_json})
         }
+      end
+      
+      def self.add_custom_rule(v, identifier, validation, message)
+        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { return #{validation}}, '#{message}')"
+        v.json[identifier] = true
+      end
+      
+      def self.render_custom_rules(a)
+        a.extras['declarations'].join("\n")
       end
     end
   end
