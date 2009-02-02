@@ -24,16 +24,35 @@ module LiveValidations
       end
   
       validates :format do |v|
-        # Probably something like validates_format_of :foo, :with => /bar/, :live_validation => 'js regex here'
+        # Build the validation regexp
+        if v.callback.options[:live_validator]
+          js_regex = v.callback.options[:live_validator]
+        else
+          regex = v.callback.options[:with]
+          js_regex = "/#{regex.source}/"
+          js_regex << 'i' if regex.casefold? # case insensitive?
+          # TODO: handle multiline as well
+        end
+        
+        # Create a validation method
+        identifier = Digest::SHA1.hexdigest(js_regex)
+        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { return #{js_regex}.test(value)}, 'Invalid format.')"
+        # TODO: Don't use a static message.
+        
+        # Assign the validation method to this validator.
+        v.json[identifier] = true
       end
-  
+      
       validates :uniqueness do |v|
         # Next version. We need to do AJAX callbacks here.
       end
       
       json do |a|
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
-        "$('##{dom_id}').validate(#{{'rules' => a.json_data}.to_json})"
+        %{
+         #{a.extras['declarations'].join} 
+         $('##{dom_id}').validate(#{{'rules' => a.json_data}.to_json})
+        }
       end
     end
   end
