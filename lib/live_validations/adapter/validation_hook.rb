@@ -4,9 +4,7 @@ module LiveValidations
     class ValidationHook
       attr_reader :json, :tag_attributes, :callback, :adapter_instance
       def initialize(&block)
-        @json = {}
-        @raw_json = {}
-        @tag_attributes = {}
+        reset_data
         @proc = block
       end
       
@@ -34,12 +32,20 @@ module LiveValidations
             @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes)
           end
         end
+        
+        reset_data
       end
       
       private
       
       def recursively_merge_hash(h1, h2)
         h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hash(_old, _new) else _new end  }
+      end
+      
+      def reset_data
+        @json = {}
+        @raw_json = {}
+        @tag_attributes = {}
       end
     end
   end
