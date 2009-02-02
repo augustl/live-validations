@@ -62,4 +62,12 @@ class JqueryValidationsTest < Test::Unit::TestCase
     expected_json = {"post[title]" => {custom_validator_key => true}}
     assert_equal expected_json, validator.json_data
   end
+
+  def test_validates_acceptance_of
+    Post.validates_acceptance_of :check_me
+    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    
+    expected_json = {"post[check_me]" => {"required" => true}}
+    assert_equal expected_json, validator.json_data
+  end
 end

@@ -5,6 +5,10 @@ module LiveValidations
       validates :presence do |v|
         v.json['required'] = true
       end
+      
+      validates :acceptance do |v|
+        v.json['required'] = true
+      end
   
       validates :length do |v|
         v.json['minlength']   = v.callback.options[:minimum]
