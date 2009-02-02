@@ -18,7 +18,18 @@ module LiveValidations
         
         if v.callback.options[:is]
           length = v.callback.options[:is]
-          add_custom_rule(v, "lengthIs#{length}", "value.length == #{length}", "Please enter exactly #{length} characters.")
+          add_custom_rule(v, "lengthIs#{length}", "return value.length == #{length}", "Please enter exactly #{length} characters.")
+        end
+      end
+      
+      validates :inclusion do |v|
+        enum = v.callback.options[:in] || v.callback.options[:within]
+        
+        case enum
+        when Range
+          v.json['range'] = [enum.first, enum.last]
+        when Array
+          add_custom_rule(v, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", "Please enter either of #{enum.to_sentence}")
         end
       end
   
@@ -44,7 +55,7 @@ module LiveValidations
           # TODO: handle multiline as well
         end
         
-        add_custom_rule(v, Digest::SHA1.hexdigest(js_regex), "#{js_regex}.test(value)", "Invalid format")
+        add_custom_rule(v, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", "Invalid format")
         # TODO: Don't use a static message.
       end
       
@@ -61,7 +72,7 @@ module LiveValidations
       end
       
       def self.add_custom_rule(v, identifier, validation, message)
-        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { return #{validation}}, '#{message}')"
+        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { #{validation}}, '#{message}')"
         v.json[identifier] = true
       end
       
