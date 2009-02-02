@@ -29,11 +29,15 @@ module LiveValidations
     end
     
     def json_data
-      @json_data ||= hash_with_blank_hash_as_default_key
+      @json_data ||= hash_with_default_key {{}}
     end
     
     def tag_attributes_data
-      @tag_attributes_data ||= hash_with_blank_hash_as_default_key
+      @tag_attributes_data ||= hash_with_default_key {{}}
+    end
+    
+    def extras
+      @extras ||= hash_with_default_key {[]}
     end
     
     # Utility method, so that adapters can call this method directly instead of explicitly
@@ -44,8 +48,8 @@ module LiveValidations
     
     private
     
-    def hash_with_blank_hash_as_default_key
-      Hash.new {|hash, key| hash[key] = {} }
+    def hash_with_default_key
+      Hash.new {|hash, key| hash[key] = yield }
     end
   end
 end
