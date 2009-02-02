@@ -36,10 +36,7 @@ class JqueryValidationsTest < Test::Unit::TestCase
   
   def test_confirmation
     Post.validates_confirmation_of :password
-    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-  
-    expected_json = {"post[password_confirmation]" => {"equalTo" => "#post_password"}}
-    assert_equal expected_json, validator.json_data
+    assert_expected_json "post[password_confirmation]" => {"equalTo" => "#post_password"}
   end
   
   def test_validates_format_of_without_custom_javascript_format
@@ -65,33 +62,26 @@ class JqueryValidationsTest < Test::Unit::TestCase
 
   def test_validates_acceptance_of
     Post.validates_acceptance_of :check_me
-    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    
-    expected_json = {"post[check_me]" => {"required" => true}}
-    assert_equal expected_json, validator.json_data
+    assert_expected_json "post[check_me]" => {"required" => true}
   end
   
   def test_validates_length_of_within
     Post.validates_length_of :title, :within => 4..40
-    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    
-    expected_json = {"post[title]" => {"rangelength" => [4, 40]}}
-    assert_equal expected_json, validator.json_data
+    assert_expected_json "post[title]" => {"rangelength" => [4, 40]}
   end
   
   def test_validates_length_of_maximum
     Post.validates_length_of :title, :maximum => 20
-    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    
-    expected_json = {"post[title]" => {"maxlength" => 20}}
-    assert_equal expected_json, validator.json_data
+    assert_expected_json "post[title]" => {"maxlength" => 20}
   end
   
   def test_validates_length_of_minimum
     Post.validates_length_of :title, :minimum => 20
+    assert_expected_json "post[title]" => {"minlength" => 20}
+  end
+  
+  def assert_expected_json(expected_json)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    
-    expected_json = {"post[title]" => {"minlength" => 20}}
     assert_equal expected_json, validator.json_data
   end
 end
