@@ -23,7 +23,7 @@ class ActiveRecordHooksTest < Test::Unit::TestCase
     Post.validates_presence_of :title
     Post.validates_length_of :title, :maximum => 50
     # This one is ignored, as it's on update, and the post is a new record.
-    Post.validates_format_of :body, :with => /silly/, :on => :create
+    Post.validates_format_of :body, :with => /silly/, :on => (post.new_record? ? :create : :update)
     
     validators = post.validation_callback_for(:title)
     assert_equal 2, validators.size
