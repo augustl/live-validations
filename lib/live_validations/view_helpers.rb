@@ -20,7 +20,7 @@ module LiveValidations
         end
 
         self.adapter_instance = LiveValidations.current_adapter.new(record)
-        form_for_without_live_validations(record_name_or_array, *args, &block)
+        form_for_without_live_validations(record_name_or_array, *(args << options), &block)
         concat(%{<script type="text/javascript">#{adapter_instance.render_json}</script>}, block.binding) if adapter_instance.utilizes_json?
       else
         form_for_without_live_validations(record_name_or_array, *args, &block)
