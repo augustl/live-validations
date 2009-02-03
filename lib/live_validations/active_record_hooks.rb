@@ -28,8 +28,11 @@ module LiveValidations
       end
       
       def validation_callbacks
-        on = [:save, (new_record? ? :create : :update)]
-        self.class.validate_callback_chain.select {|callback| callback.kind == :validate && on.include?(callback.options[:on]) }
+        current_state     = new_record? ? :create : :update
+        on_save           = self.class.validate_callback_chain.select {|callback| callback.kind == :validate }
+        on_current_state  = self.class.send("validate_on_#{current_state}_callback_chain")
+        
+        on_save + on_current_state
       end
     end
   end
