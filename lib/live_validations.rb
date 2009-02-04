@@ -11,7 +11,7 @@ module LiveValidations
   def current_adapter
     adapter = @_current_adapter
     
-    return adapter || raise(AdapterNotSpecified, "Please specify an adapter with `LiveValidation.use(AdapterClassHere)'.")
+    return adapter || raise(AdapterNotSpecified, "Please specify an adapter with `LiveValidations.use(AdapterClassHere)'.")
   end
   
   def current_adapter=(adapter)
