@@ -60,7 +60,8 @@ module LiveValidations
       end
       
       validates :uniqueness do |v|
-        # Next version. We need to do AJAX callbacks here.
+        model_class = v.adapter_instance.active_record_instance.class.name
+        v.json['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
       end
       
       json do |a|

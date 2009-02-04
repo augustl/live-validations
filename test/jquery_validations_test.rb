@@ -88,6 +88,11 @@ class JqueryValidationsTest < Test::Unit::TestCase
     assert_expected_json "post[title]" => {"range" => [5, 10]}
   end
   
+  def test_uniqueness
+    Post.validates_uniqueness_of :title
+    assert_expected_json "post[title]" => {"remote" => "/live_validations/uniqueness?model_class=Post"}
+  end
+  
   def assert_expected_json(expected_json)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
     assert_equal expected_json, validator.json_data
