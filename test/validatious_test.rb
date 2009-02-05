@@ -9,11 +9,18 @@ class ValidatiousTest < ActiveSupport::TestCase
     restore_callbacks Post
   end
   
-  def test_render_json
+  def test_presence
     Post.validates_presence_of :title
+    assert_expected_attributes_data :title => {:class => "required"}
+  end
+  
+  def test_confirmation
+    Post.validates_confirmation_of :password
+    assert_expected_attributes_data :password_confirmation => {:class => "confirmation-of_post_password"}
+  end
+  
+  def assert_expected_attributes_data(expected_attributes_data)
     validator = LiveValidations::Adapters::Validatious.new(Post.new)
-    
-    expected_json_data = {:title => {:class => "required"}}
-    assert_equal expected_json_data, validator.tag_attributes_data
+    assert_equal expected_attributes_data, validator.tag_attributes_data
   end
 end

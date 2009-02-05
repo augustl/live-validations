@@ -12,6 +12,10 @@ module LiveValidations
         recursively_merge_hash(@raw_json, json)
       end
       
+      def raw_tag_attributes(attributes)
+        recursively_merge_hash(@raw_tag_attributes, attributes.symbolize_keys)
+      end
+      
       def run_validation(adapter_instance, callback)
         @adapter_instance = adapter_instance
         @callback = callback
@@ -31,6 +35,10 @@ module LiveValidations
           unless @tag_attributes.blank?
             @adapter_instance.tag_attributes_data[attribute].merge!(@tag_attributes)
           end
+          
+          unless @raw_tag_attributes.blank?
+            recursively_merge_hash(@adapter_instance.tag_attributes_data, @raw_tag_attributes)
+          end
         end
         
         reset_data
@@ -46,6 +54,7 @@ module LiveValidations
         @json = {}
         @raw_json = {}
         @tag_attributes = {}
+        @raw_tag_attributes = {}
       end
     end
   end

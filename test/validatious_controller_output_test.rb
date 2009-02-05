@@ -16,12 +16,14 @@ class ValidatiousControllerOutputTest < ActionController::TestCase
   def test_html_attribute_output
     LiveValidations.use(LiveValidations::Adapters::Validatious)
     Post.validates_presence_of :title, :category
+    Post.validates_confirmation_of :password
     
     get :new
     assert_response :success
     
     assert_select('form.validate')
     assert_select('input#post_title.required')
+    assert_select('input#post_password_confirmation.confirmation-of_post_password')
     assert_select('select#post_category.required')
     assert css_select('script[type=text/javascript]').empty?
   end
