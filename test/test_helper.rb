@@ -14,20 +14,9 @@ silence_warnings { RAILS_ENV = ENV['RAILS_ENV'] }
 ActiveRecord::Migration.verbose = false
 ActiveRecord::Migrator.migrate File.join(rails_root, 'db', 'migrate')
 
-Test::Unit::TestCase.fixture_path = File.join(File.dirname(__FILE__), 'fixtures')
+require 'mocha'
 
-class Test::Unit::TestCase #:nodoc:
-  def create_fixtures(*table_names)
-    if block_given?
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names) { yield }
-    else
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names)
-    end
-  end
- 
-  self.use_transactional_fixtures = false
-  self.use_instantiated_fixtures  = false
-  
+class ActiveSupport::TestCase #:nodoc:
   def reset_callbacks(model)
     @_original_callbacks = {}
     

@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "test_helper")
 
-class ActiveRecordHooksTest < Test::Unit::TestCase
+class ActiveRecordHooksTest < ActiveSupport::TestCase
   def setup
     reset_callbacks Post
   end
