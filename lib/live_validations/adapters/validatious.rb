@@ -21,11 +21,9 @@ module LiveValidations
           v.raw_tag_attributes("#{attribute}_confirmation" => {:class => "confirmation-of_#{prefix}_#{attribute}"})
         end
       end
-  
-      validates :format do |v|
-      end
-  
-      validates :uniqueness do |v|
+      
+      validates :acceptance do |v|
+        v.tag_attributes[:class] = 'required'
       end
       
       form_for_options do |o|
