@@ -20,6 +20,7 @@ class ValidatiousControllerOutputTest < ActionController::TestCase
     get :new
     assert_response :success
     
+    assert_select('form.validate')
     assert_select('input#post_title.required')
     assert_select('select#post_category.required')
     assert css_select('script[type=text/javascript]').empty?

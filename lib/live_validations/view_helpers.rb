@@ -8,8 +8,6 @@ module LiveValidations
       options = args.extract_options!
       
       if options[:live_validations]
-        options.merge!(:builder => LiveValidations::FormBuilder)
-        
         record = case record_name_or_array
         when Array
           array.last
@@ -20,6 +18,9 @@ module LiveValidations
         end
 
         self.adapter_instance = LiveValidations.current_adapter.new(record)
+        
+        adapter_instance.handle_form_for_options(options)
+        
         form_for_without_live_validations(record_name_or_array, *(args << options), &block)
         concat(%{<script type="text/javascript">#{adapter_instance.render_json}</script>}, block.binding) if adapter_instance.utilizes_json?
       else

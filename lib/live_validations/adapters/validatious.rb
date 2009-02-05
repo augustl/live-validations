@@ -20,6 +20,10 @@ module LiveValidations
   
       validates :uniqueness do |v|
       end
+      
+      form_for_options do |o|
+        o.merge!(:html => {:class => 'validate'})
+      end
     end
   end
 end

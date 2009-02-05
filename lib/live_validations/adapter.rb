@@ -32,7 +32,7 @@ module LiveValidations
     end
     
     def utilizes_json?
-      json_proc && !json_data.blank?
+      self.class.json_proc && !json_data.blank?
     end
     
     def json_data
@@ -45,6 +45,11 @@ module LiveValidations
     
     def extras
       @extras ||= hash_with_default_key {[]}
+    end
+    
+    def handle_form_for_options(options)
+      options.merge!(:builder => LiveValidations::FormBuilder)
+      self.class.form_for_options_proc.call(options) if self.class.form_for_options_proc
     end
     
     # Utility method, so that adapters can call this method directly instead of explicitly

@@ -2,7 +2,7 @@ module LiveValidations
   class Adapter
     # The methods individual adapters uses to implement itself.
     module AdapterMethods
-      attr_internal_accessor :json_proc, :validation_hooks, :validation_responses
+      attr_internal_accessor :json_proc, :form_for_options_proc, :validation_hooks, :validation_responses
       # Hooks into a validation method. Example:
       #
       #  validates :presence do |v|
@@ -36,6 +36,10 @@ module LiveValidations
       def response(name, &block)
         self.validation_responses ||= {}
         self.validation_responses[name] = ValidationResponse.new(&block)
+      end
+      
+      def form_for_options(&block)
+        self.form_for_options_proc = block
       end
     end
   end
