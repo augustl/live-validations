@@ -29,7 +29,9 @@ class ActiveSupport::TestCase #:nodoc:
   end
   
   # Be nice to other test files and run this in teardown.
-  def restore_callbacks(model)
+  def restore_callbacks(model) 
+    return if @original_callbacks.blank?
+    
     @_original_callbacks.each do |name, callback|
       model.instance_variable_set("@#{name}", callback)
     end
