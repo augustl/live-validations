@@ -59,9 +59,17 @@ module LiveValidations
         # TODO: Don't use a static message.
       end
       
-      validates :uniqueness do |v|
-        model_class = v.adapter_instance.active_record_instance.class.name
-        v.json['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+      if supports_controller_hooks?
+        validates :uniqueness do |v|
+          model_class = v.adapter_instance.active_record_instance.class.name
+          v.json['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+        end
+      
+        response :uniqueness do |r|
+          column  = r.params[r.params[:model_class].downcase].keys.first
+          value   = r.params[r.params[:model_class].downcase][column]
+          r.params[:model_class].constantize.count(:conditions => {column => value}) == 0
+        end
       end
       
       json do |a|

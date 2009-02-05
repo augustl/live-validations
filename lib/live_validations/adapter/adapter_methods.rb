@@ -29,6 +29,11 @@ module LiveValidations
       def json(&block)
         self.json_proc = block
       end
+      
+      def response(name, &block)
+        self.validation_responses ||= {}
+        self.validation_responses[name] = ValidationResponse.new(&block)
+      end
     end
   end
 end

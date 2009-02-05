@@ -5,6 +5,8 @@ module LiveValidations
     cattr_accessor :json_proc
     # A hash of ValidationHook instances.
     cattr_accessor :validation_hooks
+    # A hash of ValidationResponse instances
+    cattr_accessor :validation_responses
     
     # This module contains the methods expected to be called by the adapter implementations.
     extend AdapterMethods
@@ -14,10 +16,18 @@ module LiveValidations
       
       active_record_instance.validation_callbacks.each do |callback|
         method = callback.options[:validation_method]
-        self.class.validation_hooks[method].run_validation(self, callback)
+        validation_hook = self.class.validation_hooks[method]
+        
+        if validation_hook
+          validation_hook.run_validation(self, callback)
+        end
       end
     end
     attr_reader :active_record_instance
+    
+    def self.supports_controller_hooks?
+      Rails.version >= "2.3"
+    end
     
     # Called by the form builder, rendering the JSON (if the adapter utilizes this)
     def render_json
