@@ -11,7 +11,6 @@ module LiveValidations
       end
   
       validates :length do |v|
-        # :within, :maximum, :minimum, or :is
         v.json['minlength']   = v.callback.options[:minimum] if v.callback.options[:minimum]
         v.json['maxlength']   = v.callback.options[:maximum] if v.callback.options[:maximum]
         v.json['rangelength'] = [v.callback.options[:within].first, v.callback.options[:within].last] if v.callback.options[:within]
