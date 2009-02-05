@@ -1,13 +1,6 @@
 module LiveValidations
   # The base class of an adapter.
   class Adapter
-    # The proc used to render the JSON (see render_json)
-    cattr_accessor :json_proc
-    # A hash of ValidationHook instances.
-    cattr_accessor :validation_hooks
-    # A hash of ValidationResponse instances
-    cattr_accessor :validation_responses
-    
     # This module contains the methods expected to be called by the adapter implementations.
     extend AdapterMethods
     
