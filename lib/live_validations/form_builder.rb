@@ -1,8 +1,8 @@
 module LiveValidations
   class FormBuilder < ActionView::Helpers::FormBuilder
     # Where the html options are foo_field(:fieldname, :html => {})
-    helpers_with_one_option_hash = field_helpers + %w(hidden_field label fields_for)
-
+    helpers_with_one_option_hash = field_helpers + %w(hidden_field fields_for) - %w(label)
+    
     # Where the HTML options are foo_field(:fieldname, {:options => 'here'}, {:html_options => 'here'})
     helpers_with_two_option_hashes = %w(date_select datetime_select time_select) +
     %w(collection_select select country_select time_zone_select)
