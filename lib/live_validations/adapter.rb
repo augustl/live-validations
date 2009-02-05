@@ -26,7 +26,11 @@ module LiveValidations
     attr_reader :active_record_instance
     
     def self.supports_controller_hooks?
-      Rails.version >= "2.3"
+      if Rails::VERSION::MAJOR == 2
+        return Rails::VERSION::MINOR >= 3
+      else
+        return Rails::VERSION::MAJOR >= 2
+      end
     end
     
     # Called by the form builder, rendering the JSON (if the adapter utilizes this)
