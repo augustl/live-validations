@@ -2,18 +2,29 @@ module LiveValidations
   module Adapters
     # Adapter for http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     class JqueryValidations < LiveValidations::Adapter
-      validates :presence do |v|
-        v.json['required'] = true
+      validates :presence do |v, attribute|
+        v.json[attribute]['required'] = true
       end
       
-      validates :acceptance do |v|
-        v.json['required'] = true
+      validates :acceptance do |v, attribute|
+        v.json[attribute]['required'] = true
       end
   
-      validates :length do |v|
-        v.json['minlength']   = v.callback.options[:minimum] if v.callback.options[:minimum]
-        v.json['maxlength']   = v.callback.options[:maximum] if v.callback.options[:maximum]
-        v.json['rangelength'] = [v.callback.options[:within].first, v.callback.options[:within].last] if v.callback.options[:within]
+      validates :length do |v, attribute|
+        if v.callback.options[:minimum]
+          v.json[attribute]['minlength'] = v.callback.options[:minimum]
+        end
+        
+        if v.callback.options[:maximum]
+          v.json[attribute]['maxlength'] = v.callback.options[:maximum]
+        end
+        
+        if v.callback.options[:within]
+          v.json[attribute]['rangelength'] = [
+            v.callback.options[:within].first,
+            v.callback.options[:within].last
+          ]
+        end
         
         if v.callback.options[:is]
           length = v.callback.options[:is]
@@ -21,47 +32,44 @@ module LiveValidations
         end
       end
       
-      validates :inclusion do |v|
+      validates :inclusion do |v, attribute|
         enum = v.callback.options[:in] || v.callback.options[:within]
         
         case enum
         when Range
-          v.json['range'] = [enum.first, enum.last]
+          v.json[attribute]['range'] = [enum.first, enum.last]
         when Array
-          add_custom_rule(v, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", "Please enter either of #{enum.to_sentence}")
+          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", "Please enter either of #{enum.to_sentence}")
         end
       end
   
-      validates :numericality do |v|
-        v.json['digits'] = true
+      validates :numericality do |v, attribute|
+        v.json[attribute]['digits'] = true
       end
   
-      validates :confirmation do |v|
-        v.callback.options[:attributes].each do |attribute|
-          prefix = v.adapter_instance.active_record_instance.class.name.downcase
-          v.raw_json("#{prefix}[#{attribute}_confirmation]" => {'equalTo' => "##{prefix}_#{attribute}"})
-        end
+      validates :confirmation do |v, attribute|
+        v.json["#{attribute}_confirmation"]['equalTo'] = "##{v.prefix}_#{attribute}"
       end
   
-      validates :format do |v|
+      validates :format do |v, attribute|
         # Build the validation regexp
         if v.callback.options[:live_validator]
           js_regex = v.callback.options[:live_validator]
         else
           regex = v.callback.options[:with]
           js_regex = "/#{regex.source}/"
-          js_regex << 'i' if regex.casefold? # case insensitive?
+          js_regex << 'i' if regex.casefold?
           # TODO: handle multiline as well
         end
         
-        add_custom_rule(v, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", "Invalid format")
         # TODO: Don't use a static message.
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", "Invalid format")
       end
       
       if supports_controller_hooks?
-        validates :uniqueness do |v|
+        validates :uniqueness do |v, attribute|
           model_class = v.adapter_instance.active_record_instance.class.name
-          v.json['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+          v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
         end
       
         response :uniqueness do |r|
@@ -74,17 +82,21 @@ module LiveValidations
       json do |a|
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
         %{
-         #{render_custom_rules(a)} 
-         $('##{dom_id}').validate(#{{'rules' => a.json_data}.to_json})
+          #{custom_rules(a)}
+          $('##{dom_id}').validate(#{{'rules' => a.json}.to_json})
         }
       end
       
-      def self.add_custom_rule(v, identifier, validation, message)
-        v.adapter_instance.extras['declarations'] << "jQuery.validator.addMethod('#{identifier}', function(value) { #{validation}}, '#{message}')"
-        v.json[identifier] = true
+      def self.add_custom_rule(v, attribute, identifier, validation, message)
+        v.adapter_instance.extras['declarations'] << <<-EOF
+          jQuery.validator.addMethod('#{identifier}', function(value){
+            #{validation}
+          }, '#{message}')
+        EOF
+        v.json[attribute][identifier] = true
       end
       
-      def self.render_custom_rules(a)
+      def self.custom_rules(a)
         a.extras['declarations'].join("\n")
       end
     end

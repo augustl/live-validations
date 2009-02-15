@@ -10,11 +10,11 @@ module LiveValidations
 
     helpers_with_one_option_hash.each do |helper|
       define_method(helper) do |attribute, *args|
-        tag_attributes_data = @template.adapter_instance.tag_attributes_data[attribute]
+        tag_attributes = @template.adapter_instance.tag_attributes[attribute]
         
-        if tag_attributes_data
+        if tag_attributes
           options = args.extract_options!
-          options.merge!(tag_attributes_data)
+          options.merge!(tag_attributes)
           super(attribute, *(args << options))
         else
           super
@@ -24,21 +24,21 @@ module LiveValidations
     
     helpers_with_two_option_hashes.each do |helper|
       define_method(helper) do |attribute, *args|
-        tag_attributes_data = @template.adapter_instance.tag_attributes_data[attribute]
+        tag_attributes = @template.adapter_instance.tag_attributes[attribute]
         
-        if tag_attributes_data
+        if tag_attributes
           # We have both options and html_options
           if args[-1].is_a?(Hash) && args[-2].is_a?(Hash)
             html_options = args.pop
             options = args.pop
             
-            html_options.merge!(tag_attributes_data)
+            html_options.merge!(tag_attributes)
             args << options
             args << html_options
             super(attribute, *args)
           # No html_options was specified
           else
-            html_options = tag_attributes_data
+            html_options = tag_attributes
             args << {} unless args[-1].is_a?(Hash)
             args << html_options
             super(attribute, *args)

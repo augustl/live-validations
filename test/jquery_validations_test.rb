@@ -11,12 +11,9 @@ class JqueryValidationsTest < ActiveSupport::TestCase
     restore_callbacks Post
   end
   
-  def test_render_json
+  def test_presence
     Post.validates_presence_of :title
-    validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    
-    expected_json_data = {"post[title]" => {"required" => true}}
-    assert_equal expected_json_data, validator.json_data
+    assert_expected_json "post[title]" => {"required" => true}
   end
   
   def test_confirmation
@@ -30,7 +27,7 @@ class JqueryValidationsTest < ActiveSupport::TestCase
     
     custom_validator_key = validator.render_json[/jQuery\.validator\.addMethod\('([a-f0-9]+)/, 1]
     expected_json = {"post[title]" => {custom_validator_key => true}}
-    assert_equal expected_json, validator.json_data
+    assert_equal expected_json, validator.json
   end
   
   def test_validates_format_of_with_custom_javascript_format
@@ -42,7 +39,7 @@ class JqueryValidationsTest < ActiveSupport::TestCase
     
     assert_custom_validator('title')
   end
-
+  
   def test_validates_acceptance_of
     Post.validates_acceptance_of :check_me
     assert_expected_json "post[check_me]" => {"required" => true}
@@ -80,14 +77,15 @@ class JqueryValidationsTest < ActiveSupport::TestCase
   
   def assert_expected_json(expected_json)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
-    assert_equal expected_json, validator.json_data
+    assert_equal expected_json, validator.json
   end
   
   def assert_custom_validator(attribute)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
     custom_validator_key = validator.render_json[/jQuery\.validator\.addMethod\('([a-f0-9]+)/, 1]
-    expected_json = {"post[#{attribute}]" => {custom_validator_key => true}}
-    assert_equal expected_json, validator.json_data
+    assert custom_validator_key, "The custom validator key was not found."
     
+    expected_json = {"post[#{attribute}]" => {custom_validator_key => true}}
+    assert_equal expected_json, validator.json
   end
 end
