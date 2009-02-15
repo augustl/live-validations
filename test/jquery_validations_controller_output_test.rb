@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), "test_helper")
+
 class JqueryValidationsControllerOutputTest < ActionController::TestCase
   def setup
     @controller = PostsController.new
