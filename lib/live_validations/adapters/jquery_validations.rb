@@ -39,7 +39,7 @@ module LiveValidations
         when Range
           v.json[attribute]['range'] = [enum.first, enum.last]
         when Array
-          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", "Please enter either of #{enum.to_sentence}")
+          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", I18n.translate('activerecord.errors.messages')[:inclusion])
         end
       end
   
@@ -62,8 +62,7 @@ module LiveValidations
           # TODO: handle multiline as well
         end
         
-        # TODO: Don't use a static message.
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", "Invalid format")
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", I18n.translate('activerecord.errors.messages')[:invalid])
       end
       
       if supports_controller_hooks?
