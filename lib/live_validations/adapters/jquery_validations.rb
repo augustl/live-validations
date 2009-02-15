@@ -49,7 +49,9 @@ module LiveValidations
   
       validates :numericality do |v, attribute|
         v.json[attribute]['digits'] = true
+        v.json[attribute]['required'] = true
         v.messages[attribute]['digits'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:not_a_number]
+        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:not_a_number]
       end
   
       validates :confirmation do |v, attribute|
