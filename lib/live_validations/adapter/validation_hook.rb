@@ -2,7 +2,7 @@ module LiveValidations
   class Adapter
     # The internal representation of each of the 'validates' blocks in the adapter implementation.
     class ValidationHook
-      attr_reader :json, :tag_attributes, :callback, :prefix, :adapter_instance
+      attr_reader :json, :tag_attributes, :messages, :callback, :prefix, :adapter_instance
       
       def initialize(&block)
         @proc = block
@@ -18,8 +18,13 @@ module LiveValidations
         json.each do |attribute, rules|
           @adapter_instance.json["#{prefix}[#{attribute}]"].merge!(rules)
         end
+        
         tag_attributes.each do |attribute, rules|
           @adapter_instance.tag_attributes[attribute.to_sym].merge!(rules)
+        end
+        
+        messages.each do |attribute, message|
+          @adapter_instance.messages["#{prefix}[#{attribute}]"].merge!(message)
         end
       end
       
@@ -28,6 +33,7 @@ module LiveValidations
       def reset_data
         @json = Hash.new {|hash, key| hash[key] = {} }
         @tag_attributes = Hash.new {|hash, key| hash[key] = {} }
+        @messages = Hash.new {|hash, key| hash[key] = {} }
         
         @prefix = @adapter_instance.active_record_instance.class.name.downcase
       end

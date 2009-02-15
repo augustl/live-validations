@@ -4,10 +4,12 @@ module LiveValidations
     class JqueryValidations < LiveValidations::Adapter
       validates :presence do |v, attribute|
         v.json[attribute]['required'] = true
+        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:blank]
       end
       
       validates :acceptance do |v, attribute|
         v.json[attribute]['required'] = true
+        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:accepted]
       end
   
       validates :length do |v, attribute|
@@ -39,16 +41,20 @@ module LiveValidations
         when Range
           v.json[attribute]['range'] = [enum.first, enum.last]
         when Array
-          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", I18n.translate('activerecord.errors.messages')[:inclusion])
+          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:inclusion])
         end
       end
+      
+      # TODO: Exclusion. DRY!!111
   
       validates :numericality do |v, attribute|
         v.json[attribute]['digits'] = true
+        v.messages[attribute]['digits'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:not_a_number]
       end
   
       validates :confirmation do |v, attribute|
         v.json["#{attribute}_confirmation"]['equalTo'] = "##{v.prefix}_#{attribute}"
+        v.messages["#{attribute}_confirmation"]['equalTo'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:confirmation]
       end
   
       validates :format do |v, attribute|
@@ -62,13 +68,14 @@ module LiveValidations
           # TODO: handle multiline as well
         end
         
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", I18n.translate('activerecord.errors.messages')[:invalid])
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:invalid])
       end
       
       if supports_controller_hooks?
         validates :uniqueness do |v, attribute|
           model_class = v.adapter_instance.active_record_instance.class.name
           v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+          v.messages[attribute]['remote'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:taken]
         end
       
         response :uniqueness do |r|
@@ -82,7 +89,10 @@ module LiveValidations
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
         %{
           #{custom_rules(a)}
-          $('##{dom_id}').validate(#{{'rules' => a.json}.to_json})
+          $('##{dom_id}').validate(#{{
+            'rules' => a.json,
+            'messages' => a.messages,
+          }.to_json})
         }
       end
       
