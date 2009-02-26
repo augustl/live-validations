@@ -1,1 +1,23 @@
-Re-implementation of some old code. A sensible readme comes when the code gets closer to being usable by the public.
+Live Validations
+================
+
+Adds automagical live validations to your Rails application, by translating your regular model validations into live validation javascript.
+
+Installation instructions
+=========================
+
+The plugin is adapter based. Currently, there's only one workind adapter. It uses jQuery. Here's the procedure:
+
+* Download jQuery from http://jquery.com
+* Download the jQuery validations plugin, http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+* Add this to app/views/layouts/application.html.erb: <%= javascript_include_tag "jquery", "jquery.validate.js" %>
+* Run "ruby script/plugin install git://github.com/leethal/live-validations.git"
+* Run "ruby script/generate live_validator" (skip this step if you're on 2.3)
+* Add "LiveValidations.use(LiveValidations::Adapters::JqueryValidations)" in an initializer or at the bottom of environment.rb.
+* Add :live_validations => true to the forms you want live validations on. Example: <% form_for(@post, :live_validations => true) %>
+* There is no step 7!
+
+Moar adapters!
+==============
+
+It would rock to get some more adapters. Validatious, livevalidation.com etc. Bask in fame and glory and contribute to this project by hacking an adapter.
