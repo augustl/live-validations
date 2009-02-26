@@ -3,6 +3,8 @@ Live Validations
 
 Adds automagical live validations to your Rails application, by translating your regular model validations into live validation javascript.
 
+Introductory screencast: http://vimeo.com/3385181
+
 Installation instructions
 =========================
 
