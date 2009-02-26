@@ -22,11 +22,11 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
     assert_select 'script[type=text/javascript]'
     assert @response.body.include?("$('#new_post').validate")
     expected_json = {
-      "messages" => {
-        "post[title]" => {"required" => "can't be blank"}
-      },
       "rules" => {
         "post[title]" => {"required" => true}
+      },
+      "messages" => {
+        "post[title]" => {"required" => "can't be blank"}
       }
     }
     assert @response.body.include?(expected_json.to_json)
