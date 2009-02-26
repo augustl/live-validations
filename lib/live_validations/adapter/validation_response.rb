@@ -10,6 +10,8 @@ module LiveValidations
         @params = params
 
         return @proc.call(self)
+      rescue
+        nil
       end
     end
   end
