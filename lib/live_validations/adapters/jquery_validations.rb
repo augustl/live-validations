@@ -73,18 +73,16 @@ module LiveValidations
         add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:invalid])
       end
       
-      if supports_controller_hooks?
-        validates :uniqueness do |v, attribute|
-          model_class = v.adapter_instance.active_record_instance.class.name
-          v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
-          v.messages[attribute]['remote'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:taken]
-        end
-      
-        response :uniqueness do |r|
-          column  = r.params[r.params[:model_class].downcase].keys.first
-          value   = r.params[r.params[:model_class].downcase][column]
-          r.params[:model_class].constantize.count(:conditions => {column => value}) == 0
-        end
+      validates :uniqueness do |v, attribute|
+        model_class = v.adapter_instance.active_record_instance.class.name
+        v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+        v.messages[attribute]['remote'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:taken]
+      end
+    
+      response :uniqueness do |r|
+        column  = r.params[r.params[:model_class].downcase].keys.first
+        value   = r.params[r.params[:model_class].downcase][column]
+        r.params[:model_class].constantize.count(:conditions => {column => value}) == 0
       end
       
       json do |a|

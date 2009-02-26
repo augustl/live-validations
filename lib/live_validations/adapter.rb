@@ -37,15 +37,6 @@ module LiveValidations
       @form_for_options_proc = block
     end
     
-    # Controller hooks are only supported in 2.3 and above.
-    def self.supports_controller_hooks?
-      if Rails::VERSION::MAJOR == 2
-        return Rails::VERSION::MINOR >= 3
-      else
-        return Rails::VERSION::MAJOR > 2
-      end
-    end
-    
     def render_json
       self.class.json_proc.call(self)
     end
