@@ -8,8 +8,8 @@ Installation instructions
 
 The plugin is adapter based. Currently, there's only one workind adapter. It uses jQuery. Here's the procedure:
 
-* Download jQuery from http://jquery.com
-* Download the jQuery validations plugin, http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+* Download jQuery from http://jquery.com. Save it as public/javascripts/jquery.js
+* Download the jQuery validations plugin, http://bassistance.de/jquery-plugins/jquery-plugin-validation/. Save it as public/javascirpts/jquery.validate.js
 * Add this to app/views/layouts/application.html.erb: <%= javascript_include_tag "jquery", "jquery.validate.js" %>
 * Run "ruby script/plugin install git://github.com/leethal/live-validations.git"
 * Run "ruby script/generate live_validator" (skip this step if you're on 2.3)
