@@ -56,7 +56,10 @@ module LiveValidations
   
       validates :confirmation do |v, attribute|
         v.json["#{attribute}_confirmation"]['equalTo'] = "##{v.prefix}_#{attribute}"
-        v.messages["#{attribute}_confirmation"]['equalTo'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:confirmation]
+        v.json["#{attribute}_confirmation"]['required'] = true
+        message = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:confirmation]
+        v.messages["#{attribute}_confirmation"]['equalTo'] = message
+        v.messages["#{attribute}_confirmation"]['required'] = message
       end
   
       validates :format do |v, attribute|
