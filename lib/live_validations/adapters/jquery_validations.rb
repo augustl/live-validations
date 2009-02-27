@@ -75,7 +75,7 @@ module LiveValidations
           # TODO: handle multiline as well
         end
         
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:invalid])
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", v.message_for(:invalid))
       end
       
       validates :uniqueness do |v, attribute|
