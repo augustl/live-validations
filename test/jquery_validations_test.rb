@@ -1,10 +1,9 @@
 require File.join(File.dirname(__FILE__), "test_helper")
 
-LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
-
 class JqueryValidationsTest < ActiveSupport::TestCase
   def setup
     reset_callbacks Post
+    LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
   end
   
   def teardown

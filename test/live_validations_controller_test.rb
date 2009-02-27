@@ -10,6 +10,8 @@ class LiveValidationsControllerOutputTest < ActionController::TestCase
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     
+    LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
+    
     reset_callbacks Post
   end
   
