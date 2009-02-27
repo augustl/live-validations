@@ -42,7 +42,7 @@ module LiveValidations
     end
     
     def utilizes_json?
-      self.class.json_proc && !json.blank?
+      self.class.json_proc && (!json.blank? || !data.blank?)
     end
 
     def handle_form_for_options(options)
