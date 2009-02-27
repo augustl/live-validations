@@ -27,14 +27,14 @@ module LiveValidations
         if v.callback.options[:minimum]
           v.data["validators"] << %{
             var validator = new LiveValidation('#{v.prefix}_#{attribute}');
-            validator.add(Validate.Length, {true, minimum: #{v.callback.options[:minimum]}});
+            validator.add(Validate.Length, {minimum: #{v.callback.options[:minimum]}});
           }
         end
         
         if v.callback.options[:maximum]
           v.data["validators"] << %{
             var validator = new LiveValidation('#{v.prefix}_#{attribute}');
-            validator.add(Validate.Length, {true, maximum: #{v.callback.options[:maximum]}});
+            validator.add(Validate.Length, {maximum: #{v.callback.options[:maximum]}});
           }
         end
         
