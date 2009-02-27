@@ -4,12 +4,12 @@ module LiveValidations
     class JqueryValidations < LiveValidations::Adapter
       validates :presence do |v, attribute|
         v.json[attribute]['required'] = true
-        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:blank]
+        v.messages[attribute]['required'] = v.message_for(:blank)
       end
       
       validates :acceptance do |v, attribute|
         v.json[attribute]['required'] = true
-        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:accepted]
+        v.messages[attribute]['required'] = v.message_for(:accepted)
       end
   
       validates :length do |v, attribute|
@@ -41,7 +41,7 @@ module LiveValidations
         when Range
           v.json[attribute]['range'] = [enum.first, enum.last]
         when Array
-          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:inclusion])
+          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.message_for(:inclusion))
         end
       end
       
@@ -50,14 +50,16 @@ module LiveValidations
       validates :numericality do |v, attribute|
         v.json[attribute]['digits'] = true
         v.json[attribute]['required'] = true
-        v.messages[attribute]['digits'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:not_a_number]
-        v.messages[attribute]['required'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:not_a_number]
+        
+        message = v.message_for(:not_a_number)
+        v.messages[attribute]['digits'] = message
+        v.messages[attribute]['required'] = message
       end
   
       validates :confirmation do |v, attribute|
         v.json["#{attribute}_confirmation"]['equalTo'] = "##{v.prefix}_#{attribute}"
         v.json["#{attribute}_confirmation"]['required'] = true
-        message = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:confirmation]
+        message = v.message_for(:confirmation)
         v.messages["#{attribute}_confirmation"]['equalTo'] = message
         v.messages["#{attribute}_confirmation"]['required'] = message
       end
@@ -79,7 +81,7 @@ module LiveValidations
       validates :uniqueness do |v, attribute|
         model_class = v.adapter_instance.active_record_instance.class.name
         v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
-        v.messages[attribute]['remote'] = v.callback.options[:message] || I18n.translate('activerecord.errors.messages')[:taken]
+        v.messages[attribute]['remote'] = v.message_for(:taken)
       end
     
       response :uniqueness do |r|

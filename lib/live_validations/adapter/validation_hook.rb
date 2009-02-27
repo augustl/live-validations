@@ -32,6 +32,12 @@ module LiveValidations
         end
       end
       
+      # Returns a user specified validatior error message, or falls back to the default
+      # I18n error message for the passed key.
+      def message_for(key)
+        callback.options[:message] || I18n.translate('activerecord.errors.messages')[key]
+      end
+      
       private
       
       def reset_data

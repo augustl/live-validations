@@ -15,6 +15,7 @@ ActiveRecord::Migration.verbose = false
 ActiveRecord::Migrator.migrate File.join(rails_root, 'db', 'migrate')
 
 require 'mocha'
+require 'ostruct'
 
 class ActiveSupport::TestCase #:nodoc:
   def reset_callbacks(model)

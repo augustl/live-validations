@@ -12,6 +12,16 @@ class GeneralAdapterTest < ActiveSupport::TestCase
     restore_callbacks Post
   end
   
+  def test_message_for_with_custom_message
+    @hook.expects(:callback).returns(OpenStruct.new(:options => {:message => "Yep!"}))
+    assert_equal "Yep!", @hook.message_for(:blank)
+  end
+  
+  def test_message_for_without_custom_message
+    @hook.expects(:callback).returns(OpenStruct.new(:options => {}))
+    assert_equal I18n.translate('activerecord.errors.messages')[:blank], @hook.message_for(:blank)
+  end
+  
   def test_utilizes_json_with_data_and_proc
     LiveValidations::Adapter.expects(:json_proc).returns(Proc.new {})
     @adapter.expects(:json).returns({:not => "blank"})
