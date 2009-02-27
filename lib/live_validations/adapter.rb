@@ -2,12 +2,12 @@ module LiveValidations
   # The base class of an adapter.
   class Adapter
     
-    attr_reader :json, :tag_attributes, :extras, :messages, :active_record_instance
+    attr_reader :json, :tag_attributes, :data, :messages, :active_record_instance
     
     def initialize(active_record_instance)
       @json             = Hash.new {|hash, key| hash[key] = {} }
       @tag_attributes   = Hash.new {|hash, key| hash[key] = {} }
-      @extras           = Hash.new {|hash, key| hash[key] = [] }
+      @data             = Hash.new {|hash, key| hash[key] = [] }
       @messages         = Hash.new {|hash, key| hash[key] = {} }
       @active_record_instance = active_record_instance
       

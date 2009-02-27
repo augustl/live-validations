@@ -100,7 +100,7 @@ module LiveValidations
       end
       
       def self.add_custom_rule(v, attribute, identifier, validation, message)
-        v.adapter_instance.extras['declarations'] << <<-EOF
+        v.data['declarations'] << <<-EOF
           jQuery.validator.addMethod('#{identifier}', function(value){
             #{validation}
           }, '#{message}')
@@ -109,7 +109,7 @@ module LiveValidations
       end
       
       def self.custom_rules(a)
-        a.extras['declarations'].join("\n")
+        a.data['declarations'].join("\n")
       end
     end
   end
