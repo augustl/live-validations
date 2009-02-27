@@ -18,7 +18,7 @@ class JqueryValidationsTest < ActiveSupport::TestCase
   
   def test_confirmation
     Post.validates_confirmation_of :password
-    assert_expected_json "post[password_confirmation]" => {"equalTo" => "#post_password"}
+    assert_expected_json "post[password_confirmation]" => {"equalTo" => "#post_password", "required" => true}
   end
   
   def test_validates_format_of_without_custom_javascript_format
