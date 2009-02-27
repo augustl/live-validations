@@ -1,7 +1,7 @@
 module LiveValidations
   module Adapters
     # Adapter for http://www.livevalidation.com/ (d'oh)
-    class LivevalidationsDotCom < LiveValidations::Adapter
+    class LivevalidationDotCom < LiveValidations::Adapter
       validates :presence do |v, attribute|
         v.data["validators"] << %{
           var validator = new LiveValidation('#{v.prefix}_#{attribute}');

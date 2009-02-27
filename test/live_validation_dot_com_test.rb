@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "test_helper")
 class LiveValidationsDotComTest < ActiveSupport::TestCase
   def setup
     reset_callbacks Post
-    LiveValidations.use(LiveValidations::Adapters::LivevalidationsDotCom)
+    LiveValidations.use(LiveValidations::Adapters::LivevalidationDotCom)
   end
   
   def teardown
