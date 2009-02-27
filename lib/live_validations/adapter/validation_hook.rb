@@ -38,6 +38,16 @@ module LiveValidations
         callback.options[:message] || I18n.translate('activerecord.errors.messages')[key]
       end
       
+      # Returns the string that the validator should use as a regex in the javascripts.
+      def format_regex
+        callback.options[:live_validator] || begin
+          regex = callback.options[:with]
+          js_regex = "/#{regex.source}/"
+          js_regex << 'i' if regex.casefold?
+          js_regex
+        end
+      end
+      
       private
       
       def reset_data

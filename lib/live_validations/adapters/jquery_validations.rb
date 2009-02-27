@@ -65,17 +65,8 @@ module LiveValidations
       end
   
       validates :format do |v, attribute|
-        # Build the validation regexp
-        if v.callback.options[:live_validator]
-          js_regex = v.callback.options[:live_validator]
-        else
-          regex = v.callback.options[:with]
-          js_regex = "/#{regex.source}/"
-          js_regex << 'i' if regex.casefold?
-          # TODO: handle multiline as well
-        end
-        
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(js_regex), "return #{js_regex}.test(value)", v.message_for(:invalid))
+        regex = v.format_regex
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex), "return #{regex}.test(value)", v.message_for(:invalid))
       end
       
       validates :uniqueness do |v, attribute|

@@ -45,4 +45,16 @@ class GeneralAdapterTest < ActiveSupport::TestCase
     # No point in mocking .json or .data, because it'll never get called anyway.
     assert !@adapter.utilizes_json?
   end
+  
+  def test_format_regex_whith_custom_js_regex
+    Post.validates_format_of :title, :with => /foo/, :live_validator => "/bar/"
+    @hook.expects(:callback).returns(@post.validation_callbacks.first)
+    assert_equal "/bar/", @hook.format_regex
+  end
+  
+  def test_format_regex_using_ruby_regex
+    Post.validates_format_of :title, :with => /foo/
+    @hook.expects(:callback).times(2).returns(@post.validation_callbacks.first)
+    assert_equal "/foo/", @hook.format_regex
+  end
 end
