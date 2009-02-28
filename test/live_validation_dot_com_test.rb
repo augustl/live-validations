@@ -47,6 +47,6 @@ class LiveValidationsDotComTest < ActiveSupport::TestCase
   
   def assert_json_output(*outputs)
     validator = LiveValidations.current_adapter.new(Post.new)
-    outputs.each {|o| assert validator.data['validators'][0].include?(o) }
+    outputs.each {|o| assert validator[:validators][0].include?(o) }
   end
 end

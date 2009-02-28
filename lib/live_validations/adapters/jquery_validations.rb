@@ -2,27 +2,33 @@ module LiveValidations
   module Adapters
     # Adapter for http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     class JqueryValidations < LiveValidations::Adapter
+      setup do |v|
+        v[:validators] = Hash.new {|hash, key| hash[key] = {} }
+        v[:messages] = Hash.new {|hash, key| hash[key] = {} }
+        v[:declarations] = []
+      end
+      
       validates :presence do |v, attribute|
-        v.json[attribute]['required'] = true
-        v.messages[attribute]['required'] = v.message_for(:blank)
+        v[:validators][attribute]['required'] = true
+        v[:messages][attribute]['required'] = v.message_for(:blank)
       end
       
       validates :acceptance do |v, attribute|
-        v.json[attribute]['required'] = true
-        v.messages[attribute]['required'] = v.message_for(:accepted)
+        v[:validators][attribute]['required'] = true
+        v[:messages][attribute]['required'] = v.message_for(:accepted)
       end
   
       validates :length do |v, attribute|
         if v.callback.options[:minimum]
-          v.json[attribute]['minlength'] = v.callback.options[:minimum]
+          v[:validators][attribute]['minlength'] = v.callback.options[:minimum]
         end
         
         if v.callback.options[:maximum]
-          v.json[attribute]['maxlength'] = v.callback.options[:maximum]
+          v[:validators][attribute]['maxlength'] = v.callback.options[:maximum]
         end
         
         if v.callback.options[:within]
-          v.json[attribute]['rangelength'] = [
+          v[:validators][attribute]['rangelength'] = [
             v.callback.options[:within].first,
             v.callback.options[:within].last
           ]
@@ -39,7 +45,7 @@ module LiveValidations
         
         case enum
         when Range
-          v.json[attribute]['range'] = [enum.first, enum.last]
+          v[:validators][attribute]['range'] = [enum.first, enum.last]
         when Array
           add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.message_for(:inclusion))
         end
@@ -48,20 +54,21 @@ module LiveValidations
       # TODO: Exclusion. DRY!!111
   
       validates :numericality do |v, attribute|
-        v.json[attribute]['digits'] = true
-        v.json[attribute]['required'] = true
+        v[:validators][attribute]['digits'] = true
+        v[:validators][attribute]['required'] = true
         
         message = v.message_for(:not_a_number)
-        v.messages[attribute]['digits'] = message
-        v.messages[attribute]['required'] = message
+        v[:messages][attribute]['digits'] = message
+        v[:messages][attribute]['required'] = message
       end
   
       validates :confirmation do |v, attribute|
-        v.json["#{attribute}_confirmation"]['equalTo'] = "##{v.prefix}_#{attribute}"
-        v.json["#{attribute}_confirmation"]['required'] = true
+        attribute_name = "#{attribute}_confirmation".to_sym
+        v[:validators][attribute_name]['equalTo'] = "##{v.prefix}_#{attribute}"
+        v[:validators][attribute_name]['required'] = true
         message = v.message_for(:confirmation)
-        v.messages["#{attribute}_confirmation"]['equalTo'] = message
-        v.messages["#{attribute}_confirmation"]['required'] = message
+        v[:messages][attribute_name]['equalTo'] = message
+        v[:messages][attribute_name]['required'] = message
       end
   
       validates :format do |v, attribute|
@@ -71,8 +78,8 @@ module LiveValidations
       
       validates :uniqueness do |v, attribute|
         model_class = v.adapter_instance.active_record_instance.class.name
-        v.json[attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
-        v.messages[attribute]['remote'] = v.message_for(:taken)
+        v[:validators][attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
+        v[:messages][attribute]['remote'] = v.message_for(:taken)
       end
     
       response :uniqueness do |r|
@@ -81,28 +88,31 @@ module LiveValidations
         r.params[:model_class].constantize.count(:conditions => {column => value}) == 0
       end
       
-      json do |a|
+      renders_inline do |a|
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
+        rule_mapper = Proc.new {|returning, rule| returning.merge!("#{a.prefix}[#{rule[0]}]" => rule[1]) }
+        
         %{
           #{custom_rules(a)}
           $('##{dom_id}').validate(#{{
-            'rules' => a.json,
-            'messages' => a.messages,
+            'rules' => a[:validators].inject({}, &rule_mapper),
+            'messages' => a[:messages].inject({}, &rule_mapper),
           }.to_json})
         }
       end
       
       def self.add_custom_rule(v, attribute, identifier, validation, message)
-        v.data['declarations'] << <<-EOF
+        v[:declarations] << <<-EOF
           jQuery.validator.addMethod('#{identifier}', function(value){
             #{validation}
           }, '#{message}')
         EOF
-        v.json[attribute][identifier] = true
+        v[:validators][attribute][identifier] = true
+        v[:messages][attribute][identifier] = true
       end
       
       def self.custom_rules(a)
-        a.data['declarations'].join("\n")
+        a[:declarations].join("\n")
       end
     end
   end

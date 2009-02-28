@@ -1,48 +1,67 @@
 module LiveValidations
   # The base class of an adapter.
   class Adapter
-    
-    attr_reader :json, :tag_attributes, :data, :messages, :active_record_instance
+    attr_reader :data, :active_record_instance
     
     def initialize(active_record_instance)
-      @json             = Hash.new {|hash, key| hash[key] = {} }
-      @tag_attributes   = Hash.new {|hash, key| hash[key] = {} }
-      @data             = Hash.new {|hash, key| hash[key] = [] }
-      @messages         = Hash.new {|hash, key| hash[key] = {} }
       @active_record_instance = active_record_instance
+      
+      # Initialize the data hash with the 'setup' call from
+      # the validator.
+      @data = {}
+      self.class.setup_proc.call(self)
       
       active_record_instance.validation_callbacks.each do |callback|
         method = callback.options[:validation_method]
         validation_hook = self.class.validation_hooks[method]
         
         if validation_hook
+          validation_hook.setup(&self.class.setup_proc)
           validation_hook.run_validation(self, callback)
         end
       end
+    end
+    
+    def [](key)
+      data[key]
+    end
+    
+    def []=(key, value)
+      data[key] = value
     end
     
     def self.validates(name, &block)
       self.validation_hooks[name] = ValidationHook.new(&block)
     end
 
-    def self.json(&block)
-      @json_proc = block
+    def self.renders_inline(&block)
+      @inline_javascript_proc = block
     end
     
     def self.response(name, &block)
       self.validation_responses[name] = ValidationResponse.new(&block)
     end
     
+    def self.setup(&block)
+      @setup_proc = block
+    end
+    
     def self.form_for_options(&block)
       @form_for_options_proc = block
     end
     
-    def render_json
-      self.class.json_proc.call(self)
+    def render_inline_javascript
+      self.class.inline_javascript_proc.call(self)
     end
     
-    def utilizes_json?
-      self.class.json_proc && (!json.blank? || !data.blank?)
+    def utilizes_inline_javascript?
+      self.class.inline_javascript_proc && !data.blank?
+    end
+    
+    # The DOM prefix, e.g. "post" for Post. Used to reference DOM ids 
+    # and DOM names, such as "post[title]" and "post_title".
+    def prefix
+      active_record_instance.class.name.downcase
     end
 
     def handle_form_for_options(options)
@@ -60,8 +79,12 @@ module LiveValidations
       @validation_responses ||= {}
     end
     
-    def self.json_proc
-      @json_proc
+    def self.inline_javascript_proc
+      @inline_javascript_proc
+    end
+    
+    def self.setup_proc
+      @setup_proc
     end
     
     def self.form_for_options_proc

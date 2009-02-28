@@ -2,34 +2,44 @@ module LiveValidations
   class Adapter
     # The internal representation of each of the 'validates' blocks in the adapter implementation.
     class ValidationHook
-      attr_reader :json, :tag_attributes, :data, :messages, :callback, :prefix, :adapter_instance
+      attr_reader :data, :callback, :prefix, :adapter_instance
       
       def initialize(&block)
         @proc = block
+        @data = {}
+      end
+      
+      def [](key)
+        data[key]
+      end
+      
+      def []=(key, value)
+        data[key] = value
       end
 
       def run_validation(adapter_instance, callback)
         @adapter_instance = adapter_instance
         @callback = callback
         reset_data
-        
+                
+        # Call the proc once for each attribute in the callback. In the case of
+        # "validates_format_of :foo, :bar, :baz, :with => /maz/", these attributes
+        # will be [:foo, :bar, :baz].
         @callback.options[:attributes].each {|attribute| @proc.call(self, attribute) }
         
-        json.each do |attribute, rules|
-          @adapter_instance.json["#{prefix}[#{attribute}]"].merge!(rules)
+
+        @data.each do |key, value|
+          case value
+          when Hash
+            recursively_merge_hashes(@adapter_instance[key], value)
+          when Array
+            @adapter_instance[key] += value
+          end
         end
-        
-        tag_attributes.each do |attribute, rules|
-          @adapter_instance.tag_attributes[attribute.to_sym].merge!(rules)
-        end
-        
-        data.each do |key, contents|
-          @adapter_instance.data[key] += contents
-        end
-        
-        messages.each do |attribute, message|
-          @adapter_instance.messages["#{prefix}[#{attribute}]"].merge!(message)
-        end
+      end
+      
+      def setup
+        yield(self)
       end
       
       # Returns a user specified validatior error message, or falls back to the default
@@ -50,13 +60,12 @@ module LiveValidations
       
       private
       
+      def recursively_merge_hashes(h1, h2)
+        h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hash(_old, _new) else _new end  }
+      end
+      
       def reset_data
-        @json = Hash.new {|hash, key| hash[key] = {} }
-        @tag_attributes = Hash.new {|hash, key| hash[key] = {} }
-        @data = Hash.new {|hash, key| hash[key] = [] }
-        @messages = Hash.new {|hash, key| hash[key] = {} }
-        
-        @prefix = @adapter_instance.active_record_instance.class.name.downcase
+        @prefix = @adapter_instance.prefix
       end
     end
   end

@@ -5,7 +5,6 @@ class GeneralAdapterTest < ActiveSupport::TestCase
     reset_callbacks Post
     @post = Post.new
     @hook = LiveValidations::Adapter::ValidationHook.new
-    @adapter = LiveValidations::Adapter.new(@post)
   end
   
   def teardown
@@ -22,28 +21,31 @@ class GeneralAdapterTest < ActiveSupport::TestCase
     assert_equal I18n.translate('activerecord.errors.messages')[:blank], @hook.message_for(:blank)
   end
   
-  def test_utilizes_json_with_data_and_proc
-    LiveValidations::Adapter.expects(:json_proc).returns(Proc.new {})
-    @adapter.expects(:json).returns({:not => "blank"})
-    assert @adapter.utilizes_json?
+  def test_utilizes_inline_javascript_with_data_and_proc
+    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(Proc.new {})
+    
+    adapter = LiveValidations::Adapter.new(@post)
+    adapter.expects(:data).returns({:not => "blank"})
+    assert adapter.utilizes_inline_javascript?
   end
   
-  def test_utilizes_json_with_json_and_proc
-    LiveValidations::Adapter.expects(:json_proc).returns(Proc.new {})
-    @adapter.expects(:data).returns(:not => ["blank"])
-    assert @adapter.utilizes_json?
+  def test_utilizes_inline_javascript_with_blank_data_and_proc
+    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(Proc.new {})
+    
+    adapter = LiveValidations::Adapter.new(@post)
+    adapter.expects(:data).returns({})
+    assert !adapter.utilizes_inline_javascript?
   end
   
-  def test_utilizes_json_with_blank_json_or_data_for_that_matter
-    LiveValidations::Adapter.expects(:json_proc).returns(Proc.new {})
-    @adapter.expects(:json).returns({})
-    assert !@adapter.utilizes_json?
-  end
-  
-  def test_utilizes_json_without_json_proc
-    LiveValidations::Adapter.expects(:json_proc).returns(nil)
+  def test_utilizes_inline_javascript_without_json_proc
+    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(nil)
     # No point in mocking .json or .data, because it'll never get called anyway.
-    assert !@adapter.utilizes_json?
+    
+    adapter = LiveValidations::Adapter.new(@post)
+    assert !adapter.utilizes_inline_javascript?
   end
   
   def test_format_regex_whith_custom_js_regex

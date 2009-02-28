@@ -22,7 +22,7 @@ module LiveValidations
         adapter_instance.handle_form_for_options(options)
         
         form_for_without_live_validations(record_name_or_array, *(args << options), &block)
-        concat(%{<script type="text/javascript">#{adapter_instance.render_json}</script>}, block.binding) if adapter_instance.utilizes_json?
+        concat(%{<script type="text/javascript">#{adapter_instance.render_inline_javascript}</script>}, block.binding) if adapter_instance.utilizes_inline_javascript?
       else
         form_for_without_live_validations(record_name_or_array, *args, &block)
       end
