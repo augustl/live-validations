@@ -40,6 +40,37 @@ module LiveValidations
         end
       end
       
+      validates :inclusion do |v, attribute|
+        enum = v.callback.options[:in] || v.callback.options[:within]
+        
+        # In case it's a range of numbers, we do all this so that we can
+        # use the numericality range validation.
+        case enum
+        when Range
+          case enum.first
+          when Numeric
+            v[:validators][attribute]["Numericality"] = {:minimum => enum.first, :maximum => enum.last, :failureMessage => v.message_for(:inclusion)}
+          else
+            v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:inclusion)}
+          end
+        when Array
+          v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:inclusion)}
+        end
+      end
+      
+      validates :exclusion do |v, attribute|
+        enum = v.callback.options[:in] || v.callback.options[:within]
+        v[:validators][attribute]["Exclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:exclusion)}
+      end
+      
+      validates :acceptance do |v, attribute|
+        v[:validators][attribute]["Acceptance"] = {:failureMessage => v.message_for(:accepted)}
+      end
+      
+      validates :confirmation do |v, attribute|
+        v[:validators]["#{attribute}_confirmation".to_sym]["Confirmation"] = {:match => "#{v.prefix}_#{attribute}"}
+      end
+      
       renders_inline do |a|
         a[:validators].map do |attribute, options|
           validators = options.map {|v, attrs| %{validator.add(Validate.#{v}, #{attrs.to_json});} }.join("\n")
