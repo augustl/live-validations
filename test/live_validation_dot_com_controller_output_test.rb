@@ -16,13 +16,13 @@ class LiveValidationDotComControllerOutputTest < ActionController::TestCase
   end
   
   def test_json_output
-    Post.validates_presence_of :title
+    Post.validates_presence_of :title, :message => "ohai"
     
     get :new
     assert_response :success
      
     assert_select 'script[type=text/javascript]'
     assert @response.body.include?(%{new LiveValidation('post_title');})
-    assert @response.body.include?(%{Validate.Presence, {"failureMessage": "blank"}})
+    assert @response.body.include?(%{Validate.Presence, {"failureMessage": "ohai"}})
   end
 end
