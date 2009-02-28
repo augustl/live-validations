@@ -12,41 +12,45 @@ class LiveValidationsDotComTest < ActiveSupport::TestCase
   
   def test_presence
     Post.validates_presence_of :title
-    assert_json_output "Validate.Presence", "LiveValidation('post_title')"
+    assert_validators :title, "Presence"
   end
   
   def test_format
     Post.validates_format_of :title, :with => /ohai/
-    assert_json_output "Validate.Format", "/ohai/"
+    assert_validators :title, "Format", :pattern => "/ohai/"
   end
   
   def test_numericality
     Post.validates_numericality_of :age
-    assert_json_output "Validate.Numericality"
+    assert_validators :age, "Numericality"
   end
-
+  
   def test_length_with_minimum
     Post.validates_length_of :title, :minimum => 10
-    assert_json_output "Validate.Length", "minimum: 10"
+    assert_validators :title, "Length", :minimum => 10
   end
   
   def test_length_with_maximum
     Post.validates_length_of :title, :maximum => 10
-    assert_json_output "Validate.Length", "maximum: 10"
+    assert_validators :title, "Length", :maximum => 10
   end
   
   def test_length_with_range
     Post.validates_length_of :title, :within => 10..20
-    assert_json_output "Validate.Length", "minimum: 10", "maximum: 20"
+    assert_validators :title, "Length", :minimum => 10, :maximum => 20
   end
   
   def test_length_with_is
     Post.validates_length_of :title, :is => 20
-    assert_json_output "Validate.Length", "is: 20"
+    assert_validators :title, "Length", :is => 20
   end
   
-  def assert_json_output(*outputs)
+  def assert_validators(attribute, expected_validator, json = {})
     validator = LiveValidations.current_adapter.new(Post.new)
-    outputs.each {|o| assert validator[:validators][0].include?(o) }
+    assert validator[:validators][attribute].has_key?(expected_validator), "The validator did not include `#{expected_validator}'."
+
+    json.each do |key, value|
+      assert_equal value, validator[:validators][attribute][expected_validator][key]
+    end
   end
 end

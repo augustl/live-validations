@@ -61,7 +61,7 @@ module LiveValidations
       private
       
       def recursively_merge_hashes(h1, h2)
-        h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hash(_old, _new) else _new end  }
+        h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hashes(_old, _new) else _new end  }
       end
       
       def reset_data
