@@ -50,12 +50,7 @@ module LiveValidations
       
       # Returns the string that the validator should use as a regex in the javascripts.
       def format_regex
-        callback.options[:live_validator] || begin
-          regex = callback.options[:with]
-          js_regex = "/#{regex.source}/"
-          js_regex << 'i' if regex.casefold?
-          js_regex
-        end
+        callback.options[:live_validator] || callback.options[:with]
       end
       
       private
