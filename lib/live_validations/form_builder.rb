@@ -10,7 +10,7 @@ module LiveValidations
 
     helpers_with_one_option_hash.each do |helper|
       define_method(helper) do |attribute, *args|
-        tag_attributes = @template.adapter_instance.tag_attributes[attribute]
+        tag_attributes = @template.adapter_instance[:tag_attributes] && @template.adapter_instance[:tag_attributes][attribute]
         
         if tag_attributes
           options = args.extract_options!
@@ -24,7 +24,7 @@ module LiveValidations
     
     helpers_with_two_option_hashes.each do |helper|
       define_method(helper) do |attribute, *args|
-        tag_attributes = @template.adapter_instance.tag_attributes[attribute]
+        tag_attributes = @template.adapter_instance[:tag_attributes] && @template.adapter_instance[:tag_attributes][attribute]
         
         if tag_attributes
           # We have both options and html_options

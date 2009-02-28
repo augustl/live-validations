@@ -21,6 +21,6 @@ class ValidatiousTest < ActiveSupport::TestCase
   
   def assert_expected_attributes_data(expected_attributes_data)
     validator = LiveValidations::Adapters::Validatious.new(Post.new)
-    assert_equal expected_attributes_data, validator.tag_attributes
+    assert_equal expected_attributes_data, validator[:tag_attributes]
   end
 end
