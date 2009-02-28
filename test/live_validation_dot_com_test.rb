@@ -17,7 +17,7 @@ class LiveValidationsDotComTest < ActiveSupport::TestCase
   
   def test_format
     Post.validates_format_of :title, :with => /ohai/
-    assert_validators :title, "Format", :pattern => "/ohai/"
+    assert_validators :title, "Format", :pattern => /ohai/
   end
   
   def test_numericality

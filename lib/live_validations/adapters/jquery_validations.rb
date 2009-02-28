@@ -73,7 +73,7 @@ module LiveValidations
   
       validates :format do |v, attribute|
         regex = v.format_regex
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex), "return #{regex}.test(value)", v.message_for(:invalid))
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex.inspect), "return #{regex}.test(value)", v.message_for(:invalid))
       end
       
       validates :uniqueness do |v, attribute|
