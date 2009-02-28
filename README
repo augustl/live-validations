@@ -11,7 +11,7 @@ Installation instructions
 The plugin is adapter based. There are currently adapters for the following libraries:
 
 * http://bassistance.de/jquery-plugins/jquery-plugin-validation/ (LiveValidations::Adapters::JqueryValidations)
-* http://livevalidation.com (LiveValidations::Adapters::LivevalidationsDotCom)
+* http://livevalidation.com (LiveValidations::Adapters::LivevalidationDotCom)
 
 In parentheses is the class name of the adapter. When you have decided which adapter you want to use, do this:
 
