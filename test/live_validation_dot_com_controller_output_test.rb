@@ -22,7 +22,7 @@ class LiveValidationDotComControllerOutputTest < ActionController::TestCase
     assert_response :success
      
     assert_select 'script[type=text/javascript]'
-    assert @response.body.include?(%{new LiveValidation('post_title');})
+    assert @response.body.include?(%{new LiveValidation('post_title', {});})
     assert @response.body.include?(%{Validate.Presence, {"failureMessage": "ohai"}})
   end
 end

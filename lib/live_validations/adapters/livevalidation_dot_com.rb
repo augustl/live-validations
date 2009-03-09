@@ -72,10 +72,15 @@ module LiveValidations
       end
       
       renders_inline do |a|
+        local_options = {}
+        local_options["validMessage"] = LiveValidations.options[:default_valid_message]
+        
+        local_options.delete_if {|k, v| v.nil? }
+        
         a[:validators].map do |attribute, options|
           validators = options.map {|v, attrs| %{validator.add(Validate.#{v}, #{attrs.to_json});} }.join("\n")
           %{
-            var validator = new LiveValidation('#{a.prefix}_#{attribute}');
+            var validator = new LiveValidation('#{a.prefix}_#{attribute}', #{local_options.to_json});
             #{validators}
           }
         end.join
