@@ -59,4 +59,28 @@ class GeneralAdapterTest < ActiveSupport::TestCase
     @hook.expects(:callback).times(2).returns(@post.validation_callbacks.first)
     assert_equal /foo/, @hook.format_regex
   end
+  
+  def test_not_specifying_an_adapter
+    LiveValidations.current_adapter = nil
+    assert_raises(LiveValidations::AdapterNotSpecified) { LiveValidations.current_adapter }
+  end
+  
+  def test_specifying_adapter_as_class
+    LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
+    assert_equal LiveValidations::Adapters::JqueryValidations, LiveValidations.current_adapter
+  end
+  
+  def test_specifying_adapter_as_string
+    LiveValidations.use("jquery_validations")
+    assert_equal LiveValidations::Adapters::JqueryValidations, LiveValidations.current_adapter
+  end
+  
+  def test_specifying_adapter_as_symbol
+    LiveValidations.use(:jquery_validations)
+    assert_equal LiveValidations::Adapters::JqueryValidations, LiveValidations.current_adapter
+  end
+  
+  def test_specifying_invalid_adapter_as_symbol
+    assert_raises(LiveValidations::AdapterNotFound) { LiveValidations.use(:meh) }
+  end
 end

@@ -10,14 +10,14 @@ Installation instructions
 
 The plugin is adapter based. There are currently adapters for the following libraries:
 
-* http://bassistance.de/jquery-plugins/jquery-plugin-validation/ (LiveValidations::Adapters::JqueryValidations)
-* http://livevalidation.com (LiveValidations::Adapters::LivevalidationDotCom)
+* http://bassistance.de/jquery-plugins/jquery-plugin-validation/ (:jquery_validations)
+* http://livevalidation.com (:livevalidation_dot_com)
 
 In parentheses is the class name of the adapter. When you have decided which adapter you want to use, do this:
 
 * Download the javascripts for the adapter you've chosen, and make sure to include them in your application layout.
 * Run "ruby script/plugin install git://github.com/leethal/live-validations.git"
 * Run "ruby script/generate live_validator" (skip this step if you're on 2.3)
-* Add LiveValidations(the-class-name-of-the-adapter) in an initializer or at the bottom of environment.rb See the list above if you're unsure which class name you should use.
+* Add LiveValidations.use(the-name-of-the-adapter) in an initializer or at the bottom of environment.rb. The list of adapters above shows the adapter names you can use h ere.
 * Add :live_validations => true to the forms you want live validations on. Example: <% form_for(@post, :live_validations => true) %>
 * There is no step 6!
