@@ -72,7 +72,7 @@ module LiveValidations
       end
   
       validates :format do |v, attribute|
-        regex = v.format_regex
+        regex = v.format_regex.inspect
         add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex.inspect), "return #{regex}.test(value)", v.message_for(:invalid))
       end
       
