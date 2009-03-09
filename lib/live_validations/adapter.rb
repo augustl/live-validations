@@ -65,7 +65,6 @@ module LiveValidations
     end
 
     def handle_form_for_options(options)
-      options.merge!(:builder => LiveValidations::FormBuilder)
       self.class.form_for_options_proc.call(options) if self.class.form_for_options_proc
     end
     

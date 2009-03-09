@@ -8,3 +8,6 @@ ActiveRecord::Base.class_eval { include LiveValidations::ActiveRecordHooks }
 
 # Hook view helpers
 ActionView::Base.class_eval { include LiveValidations::ViewHelpers }
+
+## Hook into the default form builder
+ActionView::Helpers::FormBuilder.class_eval { include LiveValidations::FormBuilder }
