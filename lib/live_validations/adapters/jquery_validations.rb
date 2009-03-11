@@ -92,12 +92,13 @@ module LiveValidations
         dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
         rule_mapper = Proc.new {|returning, rule| returning.merge!("#{a.prefix}[#{rule[0]}]" => rule[1]) }
         
+        validator_options             = (LiveValidations.options[:validator_settings] && LiveValidations.options[:validator_settings].dup) || {}
+        validator_options['rules']    = a[:validators].inject({}, &rule_mapper)
+        validator_options['messages'] = a[:messages].inject({}, &rule_mapper)
+        
         %{
           #{custom_rules(a)}
-          $('##{dom_id}').validate(#{{
-            'rules' => a[:validators].inject({}, &rule_mapper),
-            'messages' => a[:messages].inject({}, &rule_mapper),
-          }.to_json})
+          $('##{dom_id}').validate(#{validator_options.to_json})
         }
       end
       
