@@ -10,7 +10,7 @@ module LiveValidations
       if options[:live_validations]
         record = case record_name_or_array
         when Array
-          array.last
+          record_name_or_array.last
         when ActiveRecord::Base
           record_name_or_array
         else
