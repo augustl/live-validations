@@ -3,7 +3,7 @@ module LiveValidations
     def self.included(base)
       base.instance_eval {
         # Where the html options are foo_field(:fieldname, :html => {})
-        helpers_with_one_option_hash = field_helpers - %w(label apply_form_for_options! fields_for)
+        helpers_with_one_option_hash = field_helpers.map(&:to_s) - %w(label apply_form_for_options! fields_for)
         
         # Where the HTML options are foo_field(:fieldname, {:options => 'here'}, {:html_options => 'here'})
         helpers_with_two_option_hashes = %w(date_select datetime_select time_select) +
