@@ -33,4 +33,15 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
     }
     assert @response.body.include?(expected_json.to_json)
   end
+  
+  
+  def test_validator_options
+    Post.validates_presence_of :title
+    LiveValidations.use LiveValidations::Adapters::JqueryValidations, :validator_settings => {"errorElement" => "span"}
+    
+    get :new
+    assert_response :success
+    
+    assert @response.body.include?(%{"errorElement": "span"})
+  end
 end

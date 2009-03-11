@@ -25,14 +25,4 @@ class LiveValidationDotComControllerOutputTest < ActionController::TestCase
     assert @response.body.include?(%{new LiveValidation('post_title', {});})
     assert @response.body.include?(%{Validate.Presence, {"failureMessage": "ohai"}})
   end
-  
-  def test_validator_options
-    Post.validates_presence_of :title
-    LiveValidations.use LiveValidations::Adapters::JqueryValidations, :validator_settings => {"errorElement" => "span"}
-    
-    get :new
-    assert_response :success
-    
-    assert @response.boddy.include?(%{"errorElement": "span"}})
-  end
 end
