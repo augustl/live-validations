@@ -1,8 +1,0 @@
-Clone the plugin from the github repository. Don't run the tests when the plugin is inside a Rails application.
-
-Run these commands:
-
-* git submodule init
-* git submodule update
-
-You can then run the tests with 'rake' or 'rake test'.
