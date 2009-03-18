@@ -102,8 +102,6 @@ class Test::Unit::TestCase
     eof
     
     @rendered_view = view.render(:inline => template)
-  rescue
-    raise "An error occurred while rendering the template. Syntax error? Missing method?"
   end
   
   def rendered_view
@@ -120,5 +118,11 @@ class Test::Unit::TestCase
   
   def count_nodes(html, selector)
     HTML::Selector.new(selector).select(HTML::Document.new(html).root).size
+  end
+end
+
+class ActionView::InlineTemplate
+  def relative_path
+    ""
   end
 end
