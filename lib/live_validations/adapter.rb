@@ -1,17 +1,24 @@
 module LiveValidations
   # The base class of an adapter.
   class Adapter
-    attr_reader :data, :active_record_instance
+    attr_reader :data, :active_record_instance, :visible_attributes
     
     def initialize(active_record_instance)
       @active_record_instance = active_record_instance
+      
+      # The list of attributes that the form is displaying.
+      @visible_attributes = []
       
       # Initialize the data hash with the 'setup' call from
       # the validator.
       @data = {}
       self.class.setup_proc.call(self)
-      
+    end
+    
+    def perform_validations
       active_record_instance.validation_callbacks.each do |callback|
+        next unless callback_has_visible_attributes?(callback)
+        
         method = callback.options[:validation_method]
         validation_hook = self.class.validation_hooks[method]
         
@@ -69,6 +76,10 @@ module LiveValidations
     end
     
     private
+    
+    def callback_has_visible_attributes?(callback)
+      callback.options[:attributes].any? {|attribute| @visible_attributes.include?(attribute)}
+    end
     
     def self.validation_hooks
       @validation_hooks ||= {}

@@ -21,6 +21,9 @@ class ValidatiousTest < ActiveSupport::TestCase
   
   def assert_expected_attributes_data(expected_attributes_data)
     validator = LiveValidations::Adapters::Validatious.new(Post.new)
+    validator.expects(:callback_has_visible_attributes?).returns(true)
+    validator.perform_validations
+    
     assert_equal expected_attributes_data, validator[:tag_attributes]
   end
 end

@@ -44,4 +44,14 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
     
     assert @response.body.include?(%{"errorElement": "span"})
   end
+  
+  def test_validation_on_attributes_without_form_field
+    Post.validates_presence_of :unexisting_attribute
+    
+    get :new
+    assert_response :success
+    
+    assert @response.body.include?(%{{"messages": {}, "rules": {}}})
+    assert !@response.body.include?("post[unexisting_attribute]")
+  end
 end

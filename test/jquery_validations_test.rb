@@ -23,6 +23,8 @@ class JqueryValidationsTest < ActiveSupport::TestCase
   def test_validates_format_of_without_custom_javascript_format
     Post.validates_format_of :title, :with => /^[a-z0-9]+$/
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    validator.expects(:callback_has_visible_attributes?).returns(true)
+    validator.perform_validations
     
     custom_validator_key = validator.render_inline_javascript[/jQuery\.validator\.addMethod\('([a-f0-9]+)/, 1]
     expected_json = {:title => {custom_validator_key => true}}
@@ -32,6 +34,8 @@ class JqueryValidationsTest < ActiveSupport::TestCase
   def test_validates_format_of_with_custom_javascript_format
     Post.validates_format_of :title, :with => /^some odd ruby specific thing$/, :live_validator => '[a-z0-9]'
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    validator.expects(:callback_has_visible_attributes?).returns(true)
+    validator.perform_validations
     
     assert validator.render_inline_javascript.include?("[a-z0-9]")
     assert !validator.render_inline_javascript.include?('some odd ruby specific thing')
@@ -76,11 +80,17 @@ class JqueryValidationsTest < ActiveSupport::TestCase
   
   def assert_expected_json(expected_json)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    validator.expects(:callback_has_visible_attributes?).returns(true)
+    validator.perform_validations
+    
     assert_equal expected_json, validator[:validators]
   end
   
   def assert_custom_validator(attribute)
     validator = LiveValidations::Adapters::JqueryValidations.new(Post.new)
+    validator.expects(:callback_has_visible_attributes?).returns(true)
+    validator.perform_validations
+    
     custom_validator_key = validator.render_inline_javascript[/jQuery\.validator\.addMethod\('([a-f0-9]+)/, 1]
     assert custom_validator_key, "The custom validator key was not found."
     
