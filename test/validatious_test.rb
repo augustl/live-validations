@@ -2,7 +2,9 @@ require File.join(File.dirname(__FILE__), "test_helper")
 
 class ValidatiousTest < ActiveSupport::TestCase
   def setup
+    reset_database
     reset_callbacks Post
+    LiveValidations.use(LiveValidations::Adapters::Validatious)
   end
   
   def teardown

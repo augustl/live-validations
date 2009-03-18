@@ -1,7 +1,8 @@
 require File.join(File.dirname(__FILE__), "test_helper")
 
-class GeneralAdapterTest < ActiveSupport::TestCase
+class GeneralAdapterTest < Test::Unit::TestCase
   def setup
+    reset_database
     reset_callbacks Post
     @post = Post.new
     @hook = LiveValidations::Adapter::ValidationHook.new

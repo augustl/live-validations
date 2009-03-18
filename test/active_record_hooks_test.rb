@@ -2,6 +2,7 @@ require File.join(File.dirname(__FILE__), "test_helper")
 
 class ActiveRecordHooksTest < ActiveSupport::TestCase
   def setup
+    reset_database
     reset_callbacks Post
   end
   

@@ -2,11 +2,9 @@ require File.join(File.dirname(__FILE__), "test_helper")
 
 class ValidatiousControllerOutputTest < ActionController::TestCase
   def setup
-    @controller = PostsController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-    
+    reset_database
     reset_callbacks Post
+    LiveValidations.use(LiveValidations::Adapters::Validatious)
   end
   
   def teardown
@@ -14,12 +12,8 @@ class ValidatiousControllerOutputTest < ActionController::TestCase
   end
   
   def test_html_attribute_output
-    LiveValidations.use(LiveValidations::Adapters::Validatious)
     Post.validates_presence_of :title, :category
     Post.validates_confirmation_of :password
-    
-    get :new
-    assert_response :success
     
     # The tag_attributes stuff doesn't work. No adapters are using it yet, so I'm
     # disabling these tests because they don't test functionality that's being used.

@@ -1,14 +1,10 @@
 require File.join(File.dirname(__FILE__), "test_helper")
 
-class JqueryValidationsControllerOutputTest < ActionController::TestCase
+class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
   def setup
-    @controller = PostsController.new
-    @request    = ActionController::TestRequest.new
-    @response   = ActionController::TestResponse.new
-    
-    LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
-    
+    reset_database
     reset_callbacks Post
+    LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
   end
   
   def teardown
@@ -18,11 +14,11 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
   def test_json_output
     Post.validates_presence_of :title
     
-    get :new
-    assert_response :success
-            
-    assert_select 'script[type=text/javascript]'
-    assert @response.body.include?("$('#new_post').validate")
+    render
+    
+    assert_html "script[type=text/javascript]"
+    assert rendered_view.include?("$('#new_post').validate")
+    
     expected_json = {
       "rules" => {
         "post[title]" => {"required" => true}
@@ -31,28 +27,27 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
         "post[title]" => {"required" => "can't be blank"}
       }
     }
-    assert @response.body.include?(expected_json.to_json)
+    
+    assert rendered_view.include?(expected_json.to_json)
   end
   
-  
+ 
   def test_validator_options
     Post.validates_presence_of :title
     LiveValidations.use LiveValidations::Adapters::JqueryValidations, :validator_settings => {"errorElement" => "span"}
     
-    get :new
-    assert_response :success
+    render
     
-    assert @response.body.include?(%{"errorElement": "span"})
+    assert rendered_view.include?(%{"errorElement": "span"})
   end
   
   def test_validation_on_attributes_without_form_field
     Post.validates_presence_of :unexisting_attribute
     
-    get :new
-    assert_response :success
+    render
     
-    assert @response.body.include?(%{"messages": {}})
-    assert @response.body.include?(%{"rules": {}})
-    assert !@response.body.include?("post[unexisting_attribute]")
+    assert rendered_view.include?(%{"messages": {}})
+    assert rendered_view.include?(%{"rules": {}})
+    assert !rendered_view.include?("post[unexisting_attribute]")
   end
 end

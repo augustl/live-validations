@@ -1,6 +1,5 @@
 require File.join(File.dirname(__FILE__), "test_helper")
 
-# Is there a better way? Rails should auto-load these. Darn.
 require File.join(File.dirname(__FILE__), '..', 'app', 'controllers', 'live_validations_controller')
 require File.join(File.dirname(__FILE__), '..', 'config', 'routes')
 
@@ -11,7 +10,7 @@ class LiveValidationsControllerOutputTest < ActionController::TestCase
     @response   = ActionController::TestResponse.new
     
     LiveValidations.use(LiveValidations::Adapters::JqueryValidations)
-    
+    reset_database
     reset_callbacks Post
   end
   

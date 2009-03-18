@@ -1,23 +1,39 @@
-# Rip-off from the Shoulda test suite. Thanks, Shoulda!
-
-ENV['RAILS_ENV'] = 'sqlite3'
-rails_root = File.join(File.dirname(__FILE__), 'rails_root')
-
-# Load the rails environment
-require File.join(rails_root, 'config', 'environment.rb')
-
-# Load the testing framework
-require 'test_help'
-silence_warnings { RAILS_ENV = ENV['RAILS_ENV'] }
-
-# Run the migrations
-ActiveRecord::Migration.verbose = false
-ActiveRecord::Migrator.migrate File.join(rails_root, 'db', 'migrate')
-
-require 'mocha'
+require 'test/unit'
 require 'ostruct'
 
-class ActiveSupport::TestCase #:nodoc:
+require 'rubygems'
+require 'active_support'
+require 'action_controller'
+require 'action_controller/test_case'
+require 'action_view'
+require 'active_record'
+require 'mocha'
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+require File.join(File.dirname(__FILE__), '..', 'init')
+
+ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
+
+class Post < ActiveRecord::Base
+  has_many :comments, :order => "position"
+end
+
+ActiveSupport::Deprecation.silenced = true
+ActiveRecord::Migration.verbose = false
+
+ActionController::Routing::Routes.draw do |map|
+  map.resources :posts
+  map.connect ":controller/:action/:id"
+end
+
+class ApplicationController < ActionController::Base
+end
+
+class PostsController < ApplicationController
+end
+
+
+class Test::Unit::TestCase
   def reset_callbacks(model)
     @_original_callbacks = {}
     
@@ -38,7 +54,71 @@ class ActiveSupport::TestCase #:nodoc:
     end
   end
   
-  #def render(template)
-  #  @output = @view.render_template(ActionView::InlineTemplate.new(@view, template))
-  #end
+  def reset_database
+    silence_stream(STDOUT) do
+      ActiveRecord::Schema.define(:version => 1) do
+        create_table :posts, :force => true do |t|
+          t.string :title
+          t.text :excerpt, :body
+        end
+      end
+    end
+  end
+  
+  def view
+    @view ||= begin
+      view_instance = ActionView::Base.new
+      view_instance.instance_eval {
+        @request = ActionController::TestRequest.new
+        @response = ActionController::TestResponse.new
+        
+        action = "index"
+        params = {:controller => "posts", :action => action}
+        
+        @controller = PostsController.new
+        @controller.request = @request
+        @controller.params = params
+        @controller.send(:initialize_current_url)
+        
+        @request.action = "index"
+        @request.assign_parameters(@controller.class.controller_path, "index", params)
+      }
+      
+      class << view_instance
+        def protect_against_forgery?
+          false
+        end
+      end
+      
+      view_instance
+    end
+  end
+  
+  def render(template = nil)
+    template ||= <<-eof
+    <% form_for(Post.new, :live_validations => true) do |f| %>
+      <%= f.text_field :title %>
+    <% end %>
+    eof
+    
+    @rendered_view = view.render(:inline => template)
+  rescue
+    raise "An error occurred while rendering the template. Syntax error? Missing method?"
+  end
+  
+  def rendered_view
+    @rendered_view || raise("You have to call `render' before calling `rendered_view'.")
+  end
+  
+  def assert_html(selector)
+    assert count_nodes(@rendered_view, selector) > 0
+  end
+  
+  def assert_no_html(selector)
+    assert count_nodes(@rendered_view, selector) == 0
+  end
+  
+  def count_nodes(html, selector)
+    HTML::Selector.new(selector).select(HTML::Document.new(html).root).size
+  end
 end
