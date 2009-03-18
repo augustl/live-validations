@@ -53,12 +53,16 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
   end
   
   def test_validation_on_attributes_without_form_field
-    Post.validates_presence_of :unexisting_attribute
+    Post.validates_presence_of :title
     
-    render
+    render <<-eof
+    <% form_for(Post.new, :live_validations => true) do |f| %>
+      <%= f.text_field :excerpt %>
+    <% end %>
+    eof
     
     assert rendered_view.include?(%{"messages": {}})
     assert rendered_view.include?(%{"rules": {}})
-    assert !rendered_view.include?("post[unexisting_attribute]")
+    assert !rendered_view.include?("post[title]")
   end
 end
