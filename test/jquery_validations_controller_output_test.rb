@@ -51,7 +51,8 @@ class JqueryValidationsControllerOutputTest < ActionController::TestCase
     get :new
     assert_response :success
     
-    assert @response.body.include?(%{{"messages": {}, "rules": {}}})
+    assert @response.body.include?(%{"messages": {}})
+    assert @response.body.include?(%{"rules": {}})
     assert !@response.body.include?("post[unexisting_attribute]")
   end
 end
