@@ -11,6 +11,17 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
     restore_callbacks Post
   end
   
+  def test_without_live_validations
+    render <<-eof
+    <% form_for(Post.new) do |f| %>
+      <%= f.text_field :title %>
+    <% end %>
+    eof
+    
+    assert_html 'form#new_post'
+    assert_no_html "script[type=text/javascript]"
+  end
+  
   def test_json_output
     Post.validates_presence_of :title
     
