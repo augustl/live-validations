@@ -84,4 +84,16 @@ class GeneralAdapterTest < Test::Unit::TestCase
   def test_specifying_invalid_adapter_as_symbol
     assert_raises(LiveValidations::AdapterNotFound) { LiveValidations.use(:meh) }
   end
+  
+  def test_with_validation_that_has_no_attribute
+    Post.validate {|r| }
+    
+    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
+    adapter = LiveValidations::Adapter.new(@post)
+    
+    # This test should probably be improved. The plugin used to raise an error when
+    # the model had attribute-less validations, which is what this tests tries to
+    # prove.
+    assert_nothing_raised { adapter.perform_validations }
+  end
 end

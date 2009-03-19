@@ -78,7 +78,7 @@ module LiveValidations
     private
     
     def callback_has_visible_attributes?(callback)
-      callback.options[:attributes].any? {|attribute| @visible_attributes.include?(attribute)}
+      callback.options[:attributes] && callback.options[:attributes].any? {|attribute| @visible_attributes.include?(attribute)}
     end
     
     def self.validation_hooks
