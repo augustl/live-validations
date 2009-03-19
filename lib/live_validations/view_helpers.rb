@@ -13,6 +13,13 @@ module LiveValidations
           record_name_or_array.last
         when ActiveRecord::Base
           record_name_or_array
+        when Symbol
+          possible_instance = instance_variable_get("@#{record_name_or_array}")
+          if possible_instance.is_a?(ActiveRecord::Base)
+            possible_instance
+          else
+            raise InvalidFormBuilderObject, "`form_for(:some_symbol, :live_validations => true)` requires the instance variable `@some_symbol` to be assigned, and point to an active record instance."
+          end
         else
           raise InvalidFormBuilderObject, "`form_for(x, :live_validotions => true)` requires `x` to be an array (e.g. [:admin, @post]) or an active record instance (e.g. @post) as its first argument. Got an instance of `#{record_name_or_array.class}`."
         end

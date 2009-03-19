@@ -74,4 +74,33 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
       eof
     }
   end
+  
+  def test_symbol_as_form_for_input_with_ivar
+    render <<-eof
+    <% @post = Post.new %>
+    <% form_for :post, :live_validations => true do |f| %>
+    <% end %>
+    eof
+    
+    assert_html "script[type=text/javascript]"
+  end
+  
+  def test_symbol_as_form_for_input_with_silly_ivar
+    assert_raises(LiveValidations::InvalidFormBuilderObject) {
+      render <<-eof
+      <% @post = Object.new %>
+      <% form_for :post, :live_validations => true do |f| %>
+      <% end %>
+      eof
+    }
+  end
+  
+  def test_symbol_as_form_for_input_with_no_ivar
+    assert_raises(LiveValidations::InvalidFormBuilderObject) {
+      render <<-eof
+      <% form_for :does_not_exist, :live_validations => true do |f| %>
+      <% end %>
+      eof
+    }
+  end
 end
