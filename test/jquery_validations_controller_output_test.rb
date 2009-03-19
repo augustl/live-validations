@@ -65,4 +65,13 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
     assert rendered_view.include?(%{"rules": {}})
     assert !rendered_view.include?("post[title]")
   end
+  
+  def test_silly_form_for_input
+    assert_raises(LiveValidations::InvalidFormBuilderObject) {
+      render <<-eof
+      <% form_for(Object.new, :live_validations => true) do |f| %>
+      <% end %>
+      eof
+    }
+  end
 end

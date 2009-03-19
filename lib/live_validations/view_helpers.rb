@@ -14,7 +14,7 @@ module LiveValidations
         when ActiveRecord::Base
           record_name_or_array
         else
-          raise ArgumentError, 'live_validation_form_for only supports an array (e.g. [:admin, @post]) or an active record instance (e.g. @post) as its first argument.'
+          raise InvalidFormBuilderObject, "`form_for(x, :live_validotions => true)` requires `x` to be an array (e.g. [:admin, @post]) or an active record instance (e.g. @post) as its first argument. Got an instance of `#{record_name_or_array.class}`."
         end
 
         self.adapter_instance = LiveValidations.current_adapter.new(record)

@@ -1,6 +1,7 @@
 module LiveValidations
   class AdapterNotSpecified < StandardError; end
   class AdapterNotFound < StandardError; end
+  class InvalidFormBuilderObject < ArgumentError; end
   
   # Set which adapter to use. Pass the adapter class directly. Example:
   #
