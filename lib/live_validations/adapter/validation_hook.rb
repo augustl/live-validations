@@ -45,7 +45,15 @@ module LiveValidations
       # Returns a user specified validatior error message, or falls back to the default
       # I18n error message for the passed key.
       def message_for(key)
-        callback.options[:message] || I18n.translate('activerecord.errors.messages')[key]
+        handwritten_message || I18n.translate('activerecord.errors.messages')[key]
+      end
+      
+      def handwritten_message
+        return unless callback.options[:message]
+        
+        I18n.backend.send(:interpolate, I18n.locale, callback.options[:message], {
+          :model => adapter_instance.active_record_instance.class.human_name
+        })
       end
       
       # Returns the string that the validator should use as a regex in the javascripts.

@@ -13,8 +13,17 @@ class GeneralAdapterTest < Test::Unit::TestCase
   end
   
   def test_message_for_with_custom_message
-    @hook.expects(:callback).returns(OpenStruct.new(:options => {:message => "Yep!"}))
+    @hook.expects(:callback).at_least_once.returns(OpenStruct.new(:options => {:message => "Yep!"}))
+    @hook.expects(:adapter_instance).returns(OpenStruct.new(:active_record_instance => @post))
+    
     assert_equal "Yep!", @hook.message_for(:blank)
+  end
+  
+  def test_message_for_with_l18n_fancy_message
+    @hook.expects(:callback).at_least_once.returns(OpenStruct.new(:options => {:message => "The {{model}}"}))
+    @hook.expects(:adapter_instance).returns(OpenStruct.new(:active_record_instance => @post))
+    
+    assert_equal "The Post", @hook.message_for(:blank)
   end
   
   def test_message_for_without_custom_message
