@@ -109,7 +109,6 @@ module LiveValidations
           }, '#{message}')
         EOF
         v[:validators][attribute][identifier] = true
-        v[:messages][attribute][identifier] = true
       end
       
       def self.custom_rules(a)
