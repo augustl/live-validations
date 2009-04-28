@@ -74,6 +74,7 @@ module LiveValidations
       renders_inline do |a|
         local_options = {}
         local_options["validMessage"] = LiveValidations.options[:default_valid_message]
+        local_options["onlyOnBlur"] = LiveValidations.options[:validate_on_blur]
         
         local_options.delete_if {|k, v| v.nil? }
         
