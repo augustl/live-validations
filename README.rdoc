@@ -10,4 +10,4 @@ Installation instructions
 
 The plugin is adapter based, and supports many of the available live validation javascript lirbaries.
 
-Check out http://wiki.github.com/leethal/live-validations for detailed instructions.
+Check out http://wiki.github.com/augustl/live-validations for detailed instructions.
