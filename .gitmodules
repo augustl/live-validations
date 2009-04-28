@@ -1,3 +1,0 @@
-[submodule "test/rails_root/vendor/rails"]
-	path = test/rails_root/vendor/rails
-	url = git://github.com/rails/rails.git
