@@ -1,12 +1,11 @@
-Live Validations
-================
+= Live Validations
 
 Adds automagical live validations to your Rails application, by translating your regular model validations into live validation javascript.
 
 Introductory screencast: http://vimeo.com/3385181
 
-Installation instructions
-=========================
+= Installation instructions
+
 
 The plugin is adapter based, and supports many of the available live validation javascript lirbaries.
 
