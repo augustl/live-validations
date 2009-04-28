@@ -44,8 +44,8 @@ module LiveValidations
       
       # Returns a user specified validatior error message, or falls back to the default
       # I18n error message for the passed key.
-      def message_for(key)
-        handwritten_message || I18n.translate('activerecord.errors.messages')[key]
+      def message_for(key,options={})
+        handwritten_message || I18n.translate(key, {:scope => 'activerecord.errors.messages'}.merge(options))
       end
       
       def handwritten_message

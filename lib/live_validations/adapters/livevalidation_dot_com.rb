@@ -21,17 +21,19 @@ module LiveValidations
       
       validates :length do |v, attribute|
         if v.callback.options[:minimum]
-          v[:validators][attribute]["Length"] = {:minimum => v.callback.options[:minimum]}
+          v[:validators][attribute]["Length"] = {:minimum => v.callback.options[:minimum], :failureMessage => v.message_for(:too_short, :count => v.callback.options[:minimum])}
         end
         
         if v.callback.options[:maximum]
-          v[:validators][attribute]["Length"] = {:maximum => v.callback.options[:maximum]}
+          v[:validators][attribute]["Length"] = {:maximum => v.callback.options[:maximum], :failureMessage => v.message_for(:too_long, :count => v.callback.options[:maximum])}
         end
         
         if v.callback.options[:within]
           v[:validators][attribute]["Length"] = {
             :minimum => v.callback.options[:within].first,
-            :maximum => v.callback.options[:within].last
+            :maximum => v.callback.options[:within].last,
+            :tooShortMessage => v.message_for(:too_short, :count => v.callback.options[:within].first),
+            :tooLongMessage => v.message_for(:too_long, :count => v.callback.options[:within].last)
           }
         end
         
