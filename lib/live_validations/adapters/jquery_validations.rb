@@ -1,7 +1,7 @@
 module LiveValidations
   module Adapters
     # Adapter for http://bassistance.de/jquery-plugins/jquery-plugin-validation/
-    class JqueryValidations < LiveValidations::Adapter
+    class JqueryValidations < LiveValidations::AdapterBase
       setup do |v|
         v[:validators] = Hash.new {|hash, key| hash[key] = {} }
         v[:messages] = Hash.new {|hash, key| hash[key] = {} }

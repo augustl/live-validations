@@ -1,7 +1,7 @@
 module LiveValidations
   module Adapters
     # Adapter for http://www.livevalidation.com/ (d'oh)
-    class LivevalidationDotCom < LiveValidations::Adapter
+    class LivevalidationDotCom < LiveValidations::AdapterBase
       setup do |v|
         v[:validators] = Hash.new {|hash, key| hash[key] = {} }
       end

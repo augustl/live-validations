@@ -5,7 +5,7 @@ class GeneralAdapterTest < Test::Unit::TestCase
     reset_database
     reset_callbacks Post
     @post = Post.new
-    @hook = LiveValidations::Adapter::ValidationHook.new
+    @hook = LiveValidations::AdapterBase::ValidationHook.new
   end
   
   def teardown
@@ -32,29 +32,29 @@ class GeneralAdapterTest < Test::Unit::TestCase
   end
   
   def test_utilizes_inline_javascript_with_data_and_proc
-    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
-    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(Proc.new {})
+    LiveValidations::AdapterBase.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::AdapterBase.expects(:inline_javascript_proc).returns(Proc.new {})
     
-    adapter = LiveValidations::Adapter.new(@post)
+    adapter = LiveValidations::AdapterBase.new(@post)
     adapter.expects(:data).returns({:not => "blank"})
     assert adapter.utilizes_inline_javascript?
   end
   
   def test_utilizes_inline_javascript_with_blank_data_and_proc
-    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
-    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(Proc.new {})
+    LiveValidations::AdapterBase.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::AdapterBase.expects(:inline_javascript_proc).returns(Proc.new {})
     
-    adapter = LiveValidations::Adapter.new(@post)
+    adapter = LiveValidations::AdapterBase.new(@post)
     adapter.expects(:data).returns({})
     assert !adapter.utilizes_inline_javascript?
   end
   
   def test_utilizes_inline_javascript_without_json_proc
-    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
-    LiveValidations::Adapter.expects(:inline_javascript_proc).returns(nil)
+    LiveValidations::AdapterBase.expects(:setup_proc).returns(Proc.new {})
+    LiveValidations::AdapterBase.expects(:inline_javascript_proc).returns(nil)
     # No point in mocking .json or .data, because it'll never get called anyway.
     
-    adapter = LiveValidations::Adapter.new(@post)
+    adapter = LiveValidations::AdapterBase.new(@post)
     assert !adapter.utilizes_inline_javascript?
   end
   
@@ -97,8 +97,8 @@ class GeneralAdapterTest < Test::Unit::TestCase
   def test_with_validation_that_has_no_attribute
     Post.validate {|r| }
     
-    LiveValidations::Adapter.expects(:setup_proc).returns(Proc.new {})
-    adapter = LiveValidations::Adapter.new(@post)
+    LiveValidations::AdapterBase.expects(:setup_proc).returns(Proc.new {})
+    adapter = LiveValidations::AdapterBase.new(@post)
     
     # This test should probably be improved. The plugin used to raise an error when
     # the model had attribute-less validations, which is what this tests tries to

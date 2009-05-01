@@ -1,6 +1,6 @@
 module LiveValidations
   # The base class of an adapter.
-  class Adapter
+  class AdapterBase
     attr_reader :data, :active_record_instance, :rendered_attributes
     
     def initialize(active_record_instance)

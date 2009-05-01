@@ -1,7 +1,7 @@
 module LiveValidations
   module Adapters
     # Adapter for http://www.validatious.org/
-    class Validatious < LiveValidations::Adapter
+    class Validatious < LiveValidations::AdapterBase
       def alters_tag_attributes?
         true
       end

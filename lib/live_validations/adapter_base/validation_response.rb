@@ -1,5 +1,5 @@
 module LiveValidations
-  class Adapter
+  class AdapterBase
     class ValidationResponse
       attr_reader :params
       def initialize(&block)

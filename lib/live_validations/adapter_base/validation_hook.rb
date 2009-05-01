@@ -1,5 +1,5 @@
 module LiveValidations
-  class Adapter
+  class AdapterBase
     # The internal representation of each of the 'validates' blocks in the adapter implementation.
     class ValidationHook
       attr_reader :data, :callback, :prefix, :adapter_instance
