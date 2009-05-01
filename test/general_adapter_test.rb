@@ -103,6 +103,18 @@ class GeneralAdapterTest < Test::Unit::TestCase
     # This test should probably be improved. The plugin used to raise an error when
     # the model had attribute-less validations, which is what this tests tries to
     # prove.
-    assert_nothing_raised { adapter.perform_validations }
+    assert_nothing_raised { adapter.run_validations }
+  end
+  
+  def test_various_types_of_form_helpers
+    render <<-eof
+    <% @post = Post.new %>
+    <% form_for :post, :live_validations => true do |f| %>
+        <%= f.text_field :title %>
+        <%= f.select :title, ["foo", "bar", "baz"] %>
+    <% end %>
+    eof
+    
+    assert_html "script[type=text/javascript]"
   end
 end

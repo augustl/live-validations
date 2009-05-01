@@ -1,13 +1,11 @@
 module LiveValidations
   # The base class of an adapter.
   class Adapter
-    attr_reader :data, :active_record_instance, :visible_attributes
+    attr_reader :data, :active_record_instance, :rendered_attributes
     
     def initialize(active_record_instance)
       @active_record_instance = active_record_instance
-      
-      # The list of attributes that the form is displaying.
-      @visible_attributes = []
+      @rendered_attributes = []
       
       # Initialize the data hash with the 'setup' call from
       # the validator.
@@ -15,7 +13,7 @@ module LiveValidations
       self.class.setup_proc.call(self)
     end
     
-    def perform_validations
+    def run_validations
       active_record_instance.validation_callbacks.each do |callback|
         next unless callback_has_visible_attributes?(callback)
         
@@ -27,6 +25,18 @@ module LiveValidations
           validation_hook.run_validation(self, callback)
         end
       end
+    end
+    
+    # Is called whenever a field helper is called (<%= f.foo %>).
+    def renders_attribute(attribute)
+      @rendered_attributes << attribute
+    end
+    
+    # Tells the form builder wether or not the adapter will
+    # alter tag attributes in the generated forms. Overrided
+    # per-adapter.
+    def alters_tag_attributes?
+      false
     end
     
     def [](key)
@@ -78,7 +88,7 @@ module LiveValidations
     private
     
     def callback_has_visible_attributes?(callback)
-      callback.options[:attributes] && callback.options[:attributes].any? {|attribute| @visible_attributes.include?(attribute)}
+      callback.options[:attributes] && callback.options[:attributes].any? {|attribute| rendered_attributes.include?(attribute)}
     end
     
     def self.validation_hooks

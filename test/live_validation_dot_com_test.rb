@@ -84,7 +84,7 @@ class LiveValidationsDotComTest < ActiveSupport::TestCase
   def assert_validators(attribute, expected_validator, json = {})
     validator = LiveValidations.current_adapter.new(Post.new)
     validator.expects(:callback_has_visible_attributes?).returns(true)
-    validator.perform_validations
+    validator.run_validations
     
     assert validator[:validators][attribute].has_key?(expected_validator), "The validator did not include `#{expected_validator}'."
 

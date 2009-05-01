@@ -2,6 +2,10 @@ module LiveValidations
   module Adapters
     # Adapter for http://www.validatious.org/
     class Validatious < LiveValidations::Adapter
+      def alters_tag_attributes?
+        true
+      end
+      
       setup do |v|
         v[:tag_attributes] = Hash.new {|hash, key| hash[key] = {} }
       end

@@ -21,14 +21,14 @@ module LiveValidations
             raise InvalidFormBuilderObject, "`form_for(:some_symbol, :live_validations => true)` requires the instance variable `@some_symbol` to be assigned, and point to an active record instance."
           end
         else
-          raise InvalidFormBuilderObject, "`form_for(x, :live_validotions => true)` requires `x` to be an array (e.g. [:admin, @post]) or an active record instance (e.g. @post) as its first argument. Got an instance of `#{record_name_or_array.class}`."
+          raise InvalidFormBuilderObject, "`form_for(x, :live_validotions => true)` requires `x` to be an array (e.g. [:admin, @post]), a symbol matching an instance variable name pointing to an active record instance (e.g. :post when @post has been set) or an active record instance (e.g. @post) as its first argument. Got an instance of `#{record_name_or_array.class}`."
         end
 
         self.adapter_instance = LiveValidations.current_adapter.new(record)
         adapter_instance.handle_form_for_options(options)
         form_for_without_live_validations(record_name_or_array, *(args << options), &block)
         
-        adapter_instance.perform_validations
+        adapter_instance.run_validations
         
         silence_warnings do
           concat(%{<script type="text/javascript">#{adapter_instance.render_inline_javascript}</script>}, block.binding) if adapter_instance.utilizes_inline_javascript?
