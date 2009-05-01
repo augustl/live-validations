@@ -1,5 +1,6 @@
 module LiveValidations
   class AdapterBase
+    # Currently this is used in the validates_uniqueness_of controller callback.
     class ValidationResponse
       attr_reader :params
       def initialize(&block)

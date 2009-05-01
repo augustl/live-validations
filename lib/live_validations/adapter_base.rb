@@ -21,7 +21,7 @@ module LiveValidations
         validation_hook = self.class.validation_hooks[method]
         
         if validation_hook
-          validation_hook.setup(&self.class.setup_proc)
+          validation_hook.instance_eval(&self.class.setup_proc)
           validation_hook.run_validation(self, callback)
         end
       end

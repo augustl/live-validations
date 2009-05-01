@@ -58,16 +58,16 @@ class GeneralAdapterTest < Test::Unit::TestCase
     assert !adapter.utilizes_inline_javascript?
   end
   
-  def test_format_regex_whith_custom_js_regex
+  def test_regex_whith_custom_js_regex
     Post.validates_format_of :title, :with => /foo/, :live_validator => /bar/
     @hook.expects(:callback).returns(@post.validation_callbacks.first)
-    assert_equal /bar/, @hook.format_regex
+    assert_equal /bar/, @hook.regex
   end
   
-  def test_format_regex_using_ruby_regex
+  def test_regex_using_ruby_regex
     Post.validates_format_of :title, :with => /foo/
     @hook.expects(:callback).times(2).returns(@post.validation_callbacks.first)
-    assert_equal /foo/, @hook.format_regex
+    assert_equal /foo/, @hook.regex
   end
   
   def test_not_specifying_an_adapter

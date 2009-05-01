@@ -1,6 +1,7 @@
 module LiveValidations
   class AdapterBase
-    # The internal representation of each of the 'validates' blocks in the adapter implementation.
+    # A ValidationHook is this plugins representation of a validation, and is created with
+    # the adapter DSL through the Validations::AdapterBase.validates method.
     class ValidationHook
       attr_reader :data, :callback, :prefix, :adapter_instance
       
@@ -20,11 +21,10 @@ module LiveValidations
       def run_validation(adapter_instance, callback)
         @adapter_instance = adapter_instance
         @callback = callback
-        reset_data
-                
-        # Call the proc once for each attribute in the callback. In the case of
-        # "validates_format_of :foo, :bar, :baz, :with => /maz/", these attributes
-        # will be [:foo, :bar, :baz].
+        @prefix = @adapter_instance.prefix
+        
+        # The @proc is called once for each of the attributes in the @callback,
+        # passing the attribute to the proc much like validates_each.
         @callback.options[:attributes].each {|attribute| @proc.call(self, attribute) }
         
 
@@ -37,13 +37,8 @@ module LiveValidations
           end
         end
       end
-      
-      def setup
-        yield(self)
-      end
-      
-      # Returns a user specified validatior error message, or falls back to the default
-      # I18n error message for the passed key.
+
+      # Returns either the :message specified, or the default I18n error message.
       def message_for(key,options={})
         handwritten_message || I18n.translate(key, {:scope => 'activerecord.errors.messages'}.merge(options))
       end
@@ -56,8 +51,7 @@ module LiveValidations
         })
       end
       
-      # Returns the string that the validator should use as a regex in the javascripts.
-      def format_regex
+      def regex
         callback.options[:live_validator] || callback.options[:with]
       end
       
@@ -65,10 +59,6 @@ module LiveValidations
       
       def recursively_merge_hashes(h1, h2)
         h1.merge!(h2) {|key, _old, _new| if _old.class == Hash then recursively_merge_hashes(_old, _new) else _new end  }
-      end
-      
-      def reset_data
-        @prefix = @adapter_instance.prefix
       end
     end
   end

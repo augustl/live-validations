@@ -12,7 +12,7 @@ module LiveValidations
       
       validates :format do |v, attribute|
         # FIXME: The regexp outputs as a string, not a regex, in the javascripts.
-        v[:validators][attribute]['Format'] = {:pattern => v.format_regex, :failureMessage => v.message_for(:invalid)}
+        v[:validators][attribute]['Format'] = {:pattern => v.regex, :failureMessage => v.message_for(:invalid)}
       end
       
       validates :numericality do |v, attribute|
