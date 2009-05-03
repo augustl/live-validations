@@ -15,7 +15,7 @@ module LiveValidations
     
     def run_validations
       active_record_instance.validation_callbacks.each do |callback|
-        next unless callback_has_visible_attributes?(callback)
+        next if !alters_tag_attributes? && !callback_has_visible_attributes?(callback)
         
         method = callback.options[:validation_method]
         validation_hook = self.class.validation_hooks[method]
