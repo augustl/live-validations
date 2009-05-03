@@ -26,9 +26,14 @@ module LiveValidations
 
         self.adapter_instance = LiveValidations.current_adapter.new(record)
         adapter_instance.handle_form_for_options(options)
-        form_for_without_live_validations(record_name_or_array, *(args << options), &block)
         
-        adapter_instance.run_validations
+        if adapter_instance.alters_tag_attributes?
+          adapter_instance.run_validations
+          form_for_without_live_validations(record_name_or_array, *(args << options), &block)
+        else
+          form_for_without_live_validations(record_name_or_array, *(args << options), &block)
+          adapter_instance.run_validations
+        end
         
         silence_warnings do
           concat(%{<script type="text/javascript">#{adapter_instance.render_inline_javascript}</script>}, block.binding) if adapter_instance.utilizes_inline_javascript?
