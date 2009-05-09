@@ -35,7 +35,7 @@ module LiveValidations
           adapter_instance.run_validations
         end
         
-        silence_warnings do
+        ActiveSupport::Deprecation.silence do
           concat(%{<script type="text/javascript">#{adapter_instance.render_inline_javascript}</script>}, block.binding) if adapter_instance.utilizes_inline_javascript?
         end
       else
