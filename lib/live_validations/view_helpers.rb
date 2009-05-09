@@ -35,6 +35,8 @@ module LiveValidations
           adapter_instance.run_validations
         end
         
+        # You don't have to pass block.binding to concat anymore. I'm leaving it in until it gets removed
+        # though, so that the plugin can be used with older rails versions that still requires a binding.
         ActiveSupport::Deprecation.silence do
           concat(%{<script type="text/javascript">#{adapter_instance.render_inline_javascript}</script>}, block.binding) if adapter_instance.utilizes_inline_javascript?
         end
