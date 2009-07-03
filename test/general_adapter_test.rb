@@ -117,4 +117,18 @@ class GeneralAdapterTest < Test::Unit::TestCase
     
     assert_html "script[type=text/javascript]"
   end
+  
+  def test_model_with_multiple_words
+    LiveValidations.use :jquery_validations
+    UserSession.validates_presence_of :login
+    
+    render <<-eof
+    <% form_for UserSession.new, :live_validations => true do |f| %>
+      <%= f.text_field :login %>
+    <% end %>
+    eof
+    
+    assert_html "input#user_session_login"
+    assert @rendered_view.include?(%{"user_session[login]":})
+  end
 end

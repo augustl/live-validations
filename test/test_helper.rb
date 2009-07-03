@@ -18,11 +18,14 @@ class Post < ActiveRecord::Base
   has_many :comments, :order => "position"
 end
 
+class UserSession < ActiveRecord::Base
+end
+
 ActiveSupport::Deprecation.silenced = true
 ActiveRecord::Migration.verbose = false
 
 ActionController::Routing::Routes.draw do |map|
-  map.resources :posts
+  map.resources :posts, :user_sessions
   map.connect ":controller/:action/:id"
 end
 
@@ -60,6 +63,10 @@ class Test::Unit::TestCase
         create_table :posts, :force => true do |t|
           t.string :title
           t.text :excerpt, :body
+        end
+        
+        create_table :user_sessions, :force => true do |t|
+          t.string :login
         end
       end
     end

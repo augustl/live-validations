@@ -78,7 +78,7 @@ module LiveValidations
     # The DOM prefix, e.g. "post" for Post. Used to reference DOM ids 
     # and DOM names, such as "post[title]" and "post_title".
     def prefix
-      active_record_instance.class.name.downcase
+      active_record_instance.class.name.underscore
     end
 
     def handle_form_for_options(options)
