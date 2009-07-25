@@ -49,7 +49,7 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
     
     render
     
-    assert rendered_view.include?(%{"errorElement": "span"})
+    assert rendered_view.include?(%{"errorElement":"span"})
   end
   
   def test_validation_on_attributes_without_form_field
@@ -61,8 +61,8 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
     <% end %>
     eof
     
-    assert rendered_view.include?(%{"messages": {}})
-    assert rendered_view.include?(%{"rules": {}})
+    assert rendered_view.include?(%{"messages":{}})
+    assert rendered_view.include?(%{"rules":{}})
     assert !rendered_view.include?("post[title]")
   end
   

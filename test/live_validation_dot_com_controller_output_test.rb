@@ -18,6 +18,6 @@ class LiveValidationDotComControllerOutputTest < ActionController::TestCase
      
     assert_html 'script[type=text/javascript]'
     assert rendered_view.include?(%{new LiveValidation('post_title', {});})
-    assert rendered_view.include?(%{Validate.Presence, {"failureMessage": "ohai"}})
+    assert rendered_view.include?(%{Validate.Presence, {"failureMessage":"ohai"}})
   end
 end
