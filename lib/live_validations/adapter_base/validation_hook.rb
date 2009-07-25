@@ -39,15 +39,16 @@ module LiveValidations
       end
 
       # Returns either the :message specified, or the default I18n error message.
-      def message_for(key,options={})
-        handwritten_message || I18n.translate(key, {:scope => 'activerecord.errors.messages'}.merge(options))
+      def message_for(attribute, key,options={})
+        handwritten_message_for(attribute) || I18n.translate(key, {:scope => 'activerecord.errors.messages'}.merge(options))
       end
       
-      def handwritten_message
+      def handwritten_message_for(attribute)
         return unless callback.options[:message]
         
         I18n.backend.send(:interpolate, I18n.locale, callback.options[:message], {
-          :model => adapter_instance.active_record_instance.class.human_name
+          :model => adapter_instance.active_record_instance.class.human_name,
+          :attribute => attribute
         })
       end
       

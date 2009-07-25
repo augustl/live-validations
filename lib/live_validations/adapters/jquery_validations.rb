@@ -10,12 +10,12 @@ module LiveValidations
       
       validates :presence do |v, attribute|
         v[:validators][attribute]['required'] = true
-        v[:messages][attribute]['required'] = v.message_for(:blank)
+        v[:messages][attribute]['required'] = v.message_for(attribute, :blank)
       end
       
       validates :acceptance do |v, attribute|
         v[:validators][attribute]['required'] = true
-        v[:messages][attribute]['required'] = v.message_for(:accepted)
+        v[:messages][attribute]['required'] = v.message_for(attribute, :accepted)
       end
   
       validates :length do |v, attribute|
@@ -47,7 +47,7 @@ module LiveValidations
         when Range
           v[:validators][attribute]['range'] = [enum.first, enum.last]
         when Array
-          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.message_for(:inclusion))
+          add_custom_rule(v, attribute, Digest::SHA1.hexdigest(enum.inspect), "var list = #{enum.to_json}; for (var i=0; i<list.length; i++){if(list[i] == value) { return true; }}", v.message_for(attribute, :inclusion))
         end
       end
       
@@ -57,7 +57,7 @@ module LiveValidations
         v[:validators][attribute]['digits'] = true
         v[:validators][attribute]['required'] = true
         
-        message = v.message_for(:not_a_number)
+        message = v.message_for(attribute, :not_a_number)
         v[:messages][attribute]['digits'] = message
         v[:messages][attribute]['required'] = message
       end
@@ -66,20 +66,20 @@ module LiveValidations
         attribute_name = "#{attribute}_confirmation".to_sym
         v[:validators][attribute_name]['equalTo'] = "##{v.prefix}_#{attribute}"
         v[:validators][attribute_name]['required'] = true
-        message = v.message_for(:confirmation)
+        message = v.message_for(attribute, :confirmation)
         v[:messages][attribute_name]['equalTo'] = message
         v[:messages][attribute_name]['required'] = message
       end
   
       validates :format do |v, attribute|
         regex = v.regex.inspect
-        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex.inspect), "return #{regex}.test(value)", v.message_for(:invalid))
+        add_custom_rule(v, attribute, Digest::SHA1.hexdigest(regex.inspect), "return #{regex}.test(value)", v.message_for(attribute, :invalid))
       end
       
       validates :uniqueness do |v, attribute|
         model_class = v.adapter_instance.active_record_instance.class.name
         v[:validators][attribute]['remote'] = "/live_validations/uniqueness?model_class=#{model_class}"
-        v[:messages][attribute]['remote'] = v.message_for(:taken)
+        v[:messages][attribute]['remote'] = v.message_for(attribute, :taken)
       end
     
       response :uniqueness do |r|

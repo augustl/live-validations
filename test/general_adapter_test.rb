@@ -16,19 +16,19 @@ class GeneralAdapterTest < Test::Unit::TestCase
     @hook.expects(:callback).at_least_once.returns(OpenStruct.new(:options => {:message => "Yep!"}))
     @hook.expects(:adapter_instance).returns(OpenStruct.new(:active_record_instance => @post))
     
-    assert_equal "Yep!", @hook.message_for(:blank)
+    assert_equal "Yep!", @hook.message_for(:title, :blank)
   end
   
   def test_message_for_with_l18n_fancy_message
-    @hook.expects(:callback).at_least_once.returns(OpenStruct.new(:options => {:message => "The {{model}}"}))
+    @hook.expects(:callback).at_least_once.returns(OpenStruct.new(:options => {:message => "The {{model}} {{attribute}}"}))
     @hook.expects(:adapter_instance).returns(OpenStruct.new(:active_record_instance => @post))
     
-    assert_equal "The Post", @hook.message_for(:blank)
+    assert_equal "The Post title", @hook.message_for(:title, :blank)
   end
   
   def test_message_for_without_custom_message
     @hook.expects(:callback).returns(OpenStruct.new(:options => {}))
-    assert_equal I18n.translate('activerecord.errors.messages')[:blank], @hook.message_for(:blank)
+    assert_equal I18n.translate('activerecord.errors.messages')[:blank], @hook.message_for(:title, :blank)
   end
   
   def test_utilizes_inline_javascript_with_data_and_proc

@@ -7,33 +7,33 @@ module LiveValidations
       end
       
       validates :presence do |v, attribute|
-        v[:validators][attribute]['Presence'] = {:failureMessage => v.message_for(:blank)}
+        v[:validators][attribute]['Presence'] = {:failureMessage => v.message_for(attribute, :blank)}
       end
       
       validates :format do |v, attribute|
         # FIXME: The regexp outputs as a string, not a regex, in the javascripts.
-        v[:validators][attribute]['Format'] = {:pattern => v.regex, :failureMessage => v.message_for(:invalid)}
+        v[:validators][attribute]['Format'] = {:pattern => v.regex, :failureMessage => v.message_for(attribute, :invalid)}
       end
       
       validates :numericality do |v, attribute|
-        v[:validators][attribute]["Numericality"] = {:onlyInteger => true, :failureMessage => v.message_for(:not_a_number)}
+        v[:validators][attribute]["Numericality"] = {:onlyInteger => true, :failureMessage => v.message_for(attribute, :not_a_number)}
       end
       
       validates :length do |v, attribute|
         if v.callback.options[:minimum]
-          v[:validators][attribute]["Length"] = {:minimum => v.callback.options[:minimum], :failureMessage => v.message_for(:too_short, :count => v.callback.options[:minimum])}
+          v[:validators][attribute]["Length"] = {:minimum => v.callback.options[:minimum], :failureMessage => v.message_for(attribute, :too_short, :count => v.callback.options[:minimum])}
         end
         
         if v.callback.options[:maximum]
-          v[:validators][attribute]["Length"] = {:maximum => v.callback.options[:maximum], :failureMessage => v.message_for(:too_long, :count => v.callback.options[:maximum])}
+          v[:validators][attribute]["Length"] = {:maximum => v.callback.options[:maximum], :failureMessage => v.message_for(attribute, :too_long, :count => v.callback.options[:maximum])}
         end
         
         if v.callback.options[:within]
           v[:validators][attribute]["Length"] = {
             :minimum => v.callback.options[:within].first,
             :maximum => v.callback.options[:within].last,
-            :tooShortMessage => v.message_for(:too_short, :count => v.callback.options[:within].first),
-            :tooLongMessage => v.message_for(:too_long, :count => v.callback.options[:within].last)
+            :tooShortMessage => v.message_for(attribute, :too_short, :count => v.callback.options[:within].first),
+            :tooLongMessage => v.message_for(attribute, :too_long, :count => v.callback.options[:within].last)
           }
         end
         
@@ -51,22 +51,22 @@ module LiveValidations
         when Range
           case enum.first
           when Numeric
-            v[:validators][attribute]["Numericality"] = {:minimum => enum.first, :maximum => enum.last, :failureMessage => v.message_for(:inclusion)}
+            v[:validators][attribute]["Numericality"] = {:minimum => enum.first, :maximum => enum.last, :failureMessage => v.message_for(attribute, :inclusion)}
           else
-            v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:inclusion)}
+            v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(attribute, :inclusion)}
           end
         when Array
-          v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:inclusion)}
+          v[:validators][attribute]["Inclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(attribute, :inclusion)}
         end
       end
       
       validates :exclusion do |v, attribute|
         enum = v.callback.options[:in] || v.callback.options[:within]
-        v[:validators][attribute]["Exclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(:exclusion)}
+        v[:validators][attribute]["Exclusion"] = {:within => enum.to_a, :failureMessage => v.message_for(attribute, :exclusion)}
       end
       
       validates :acceptance do |v, attribute|
-        v[:validators][attribute]["Acceptance"] = {:failureMessage => v.message_for(:accepted)}
+        v[:validators][attribute]["Acceptance"] = {:failureMessage => v.message_for(attribute, :accepted)}
       end
       
       validates :confirmation do |v, attribute|
