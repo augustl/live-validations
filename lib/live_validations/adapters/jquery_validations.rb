@@ -89,7 +89,7 @@ module LiveValidations
       end
       
       renders_inline do |a|
-        dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance)
+        dom_id = ActionController::RecordIdentifier.dom_id(a.active_record_instance, a.active_record_instance.new_record? ? nil : :edit)
         rule_mapper = Proc.new {|returning, rule| returning.merge!("#{a.prefix}[#{rule[0]}]" => rule[1]) }
         
         validator_options             = (LiveValidations.options[:validator_settings] && LiveValidations.options[:validator_settings].dup) || {}
