@@ -36,7 +36,7 @@ module LiveValidations
         
         if v.callback.options[:is]
           length = v.callback.options[:is]
-          add_custom_rule(v, "lengthIs#{length}", "return value.length == #{length}", "Please enter exactly #{length} characters.")
+          add_custom_rule(v, attribute, "lengthIs#{length}", "return value.length == #{length}", "Please enter exactly #{length} characters.")
         end
       end
       
