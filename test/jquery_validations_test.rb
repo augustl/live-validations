@@ -64,6 +64,11 @@ class JqueryValidationsTest < ActiveSupport::TestCase
     assert_expected_json :title => {"minlength" => 20}
   end
   
+  def test_validates_length_of_is
+    Post.validates_length_of :title, :is => 20
+    assert_expected_json :title => {"lengthIs20" => true}
+  end
+  
   def test_inclusion_as_array
     Post.validates_inclusion_of :title, :in => %w(foo bar)
     assert_custom_validator :title
