@@ -42,6 +42,14 @@ class JqueryValidationsControllerOutputTest < Test::Unit::TestCase
     assert rendered_view.include?(expected_json.to_json)
   end
   
+  def test_validator_options_with_function
+    Post.validates_presence_of :title
+    LiveValidations.use LiveValidations::Adapters::JqueryValidations, :validator_settings => {"errorPlacement" => "function(error, element) { error.appendTo(element.prev('label')); }"}
+
+    render
+
+    assert rendered_view.include?(%["errorPlacement":function(error, element) { error.appendTo(element.prev('label')); }])
+  end
  
   def test_validator_options
     Post.validates_presence_of :title
