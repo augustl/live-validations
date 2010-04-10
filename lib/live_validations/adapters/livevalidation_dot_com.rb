@@ -16,7 +16,7 @@ module LiveValidations
       end
       
       validates :numericality do |v, attribute|
-        v[:validators][attribute]["Numericality"] = {:onlyInteger => true, :failureMessage => v.message_for(attribute, :not_a_number)}
+        v[:validators][attribute]["Numericality"] = {:onlyInteger => true, :notANumberMessage => v.message_for(attribute, :not_a_number)}
       end
       
       validates :length do |v, attribute|
