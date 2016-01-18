@@ -3,3 +3,5 @@
 This project has been deprecated.
 
 It hasn't been updated for over half a decade, and much better alternatives exists now.
+
+The old code is available here: https://github.com/augustl/live-validations/tree/5cc92cac215152713105b96b1ff7cab15322b697
