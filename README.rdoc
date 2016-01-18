@@ -1,12 +1,5 @@
 = Live Validations
 
-Adds automagical live validations to your Rails application, by translating your regular model validations into live validation javascript.
+This project has been deprecated.
 
-Introductory screencast: http://vimeo.com/3385181
-
-= Installation instructions
-
-
-The plugin is adapter based, and supports many of the available live validation javascript lirbaries.
-
-Check out http://wiki.github.com/augustl/live-validations for detailed instructions.
+It hasn't been updated for over half a decade, and much better alternatives exists now.
